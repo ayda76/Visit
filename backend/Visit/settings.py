@@ -93,7 +93,8 @@ INSTALLED_APPS = [
     'django_prometheus',
     
     'account_app',
-    'doctor_app'
+    'doctor_app',
+    'schedule_app'
     
 
 ]

@@ -11,6 +11,9 @@ class WorkDay(models.Model):
         return str(self.id)
     
 
+
+    
+
 class Schedule(models.Model):
     provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE,related_name='provider_schedule')
     working_days=models.ManyToManyField(WorkDay)

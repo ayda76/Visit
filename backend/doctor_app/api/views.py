@@ -20,7 +20,7 @@ from doctor_app.api.serializers import *
 from doctor_app.models import *
 
 class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = Service.objects.all()
+    queryset = Service.objects.select_related('manager').prefetch_related('providers_recommended')
     serializer_class = ServiceSerializer
     pagination_class=None
     my_tags = ["Doctor"]
@@ -32,19 +32,19 @@ class ExpertizeViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
     
 class SubExpertizeViewSet(viewsets.ModelViewSet):
-    queryset = SubExpertize.objects.all()
+    queryset = SubExpertize.objects.select_related('expertize_related')
     serializer_class =SubExpertizeSerializer
     pagination_class=None
     my_tags = ["Doctor"]
     
 class DoctorViewSet(viewsets.ModelViewSet):
-    queryset =  Doctor.objects.all()
+    queryset =  Doctor.objects.select_related('account_related','expertize_related').prefetch_related('providers_recommended','subExpertize_relateds')
     serializer_class =  DoctorSerializer
     pagination_class=None
     my_tags = ["Doctor"]
 
 class ProviderViewSet(viewsets.ModelViewSet):
-    queryset =  Provider.objects.all()
+    queryset =  Provider.objects.select_related('doctor_related','service_related')
     serializer_class =  ProviderSerializer
     pagination_class=None
     my_tags = ["Doctor"]

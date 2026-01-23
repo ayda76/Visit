@@ -26,8 +26,8 @@ class WorkDayViewSet(viewsets.ModelViewSet):
     my_tags = ["Schedule"]
     
     
-class ScheduleViewSet(viewsets.ModelViewSet):
-    queryset = Schedule.objects.all()
-    serializer_class = ScheduleSerializer
+class WorkHourViewSet(viewsets.ModelViewSet):
+    queryset = WorkHour.objects.all()
+    serializer_class = WorkHourSerializer
     pagination_class=None
     my_tags = ["Schedule"]

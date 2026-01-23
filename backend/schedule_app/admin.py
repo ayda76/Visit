@@ -16,9 +16,9 @@ class WorkDayAdmin(ImportExportModelAdmin):
 
 
 
-@admin.register(Schedule)
-class ScheduleAdmin(ImportExportModelAdmin):
+@admin.register(WorkHour)
+class WorkHourAdmin(ImportExportModelAdmin):
 
     list_display = ('id',)
-    resource_class = ScheduleResource
+    resource_class = WorkHourResource
 

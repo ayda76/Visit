@@ -7,6 +7,7 @@ class WorkDayResource(resources.ModelResource):
           model = WorkDay
           
 
-class ScheduleResource(resources.ModelResource):
+class WorkHourResource(resources.ModelResource):
      class Meta:
-          model = Schedule
+          model = WorkHour
+          

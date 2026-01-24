@@ -5,7 +5,7 @@ from schedule_app.api.views import *
 
 router = DefaultRouter()
 router.register("WorkDay", WorkDayViewSet)
-router.register("Schedule", ScheduleViewSet)
+router.register("WorkHour", WorkHourViewSet)
 
 
 

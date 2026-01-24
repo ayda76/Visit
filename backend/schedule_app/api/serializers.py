@@ -19,9 +19,10 @@ class WorkDaySerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkDay
         fields = '__all__'
-        
-class ScheduleSerializer(serializers.ModelSerializer):
+
+
+class WorkHourSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Schedule
+        model = WorkHour
         fields = '__all__'

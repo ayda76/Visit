@@ -4,12 +4,12 @@ from django.contrib import admin
 from django.urls import path , include ,re_path
 
 router = DefaultRouter()
-router.register("Service", ServiceViewSet)
+router.register("Center", CenterViewSet)
 router.register("Expertize", ExpertizeViewSet)
 router.register("SubExpertize", SubExpertizeViewSet)
 router.register("Doctor", DoctorViewSet)
 router.register("Provider", ProviderViewSet)
-
+router.register("MedicalService", MedicalServiceViewSet)
 
 
 

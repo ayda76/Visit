@@ -19,12 +19,19 @@ from account_app.models import *
 from doctor_app.api.serializers import *
 from doctor_app.models import *
 
-class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = Service.objects.select_related('manager').prefetch_related('providers_recommended')
-    serializer_class = ServiceSerializer
+class CenterViewSet(viewsets.ModelViewSet):
+    queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
+    serializer_class = CenterSerializer
     pagination_class=None
     my_tags = ["Doctor"]
-    
+
+
+class MedicalServiceViewSet(viewsets.ModelViewSet):
+    queryset = MedicalService.objects.all()
+    serializer_class = MedicalServiceSerializer
+    pagination_class=None
+    my_tags = ["Doctor"]
+
 class ExpertizeViewSet(viewsets.ModelViewSet):
     queryset = Expertize.objects.all()
     serializer_class = ExpertizeSerializer

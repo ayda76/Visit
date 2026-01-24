@@ -2,9 +2,9 @@ from import_export import resources
 from .models import *
 
 
-class ServiceResource(resources.ModelResource):
+class CenterResource(resources.ModelResource):
      class Meta:
-          model = Service
+          model = Center
           
 class ExpertizeResource(resources.ModelResource):
      class Meta:
@@ -22,3 +22,9 @@ class DoctorResource(resources.ModelResource):
 class ProviderResource(resources.ModelResource):
      class Meta:
           model = Provider
+ 
+
+class MedicalServiceResource(resources.ModelResource):
+     class Meta:
+          model = MedicalService 
+   

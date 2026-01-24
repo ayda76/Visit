@@ -25,14 +25,20 @@ class DoctorAdmin(ImportExportModelAdmin):
     list_display = ('id','degree','phone1','phone2' )
     resource_class = DoctorResource
     
-@admin.register(Service)
-class ServiceAdmin(ImportExportModelAdmin):
+@admin.register(Center)
+class CenterAdmin(ImportExportModelAdmin):
 
     list_display = ('id','name','phone1','phone2' )
-    resource_class = ServiceResource
+    resource_class = CenterResource
 
 @admin.register(Provider)
 class ProviderAdmin(ImportExportModelAdmin):
 
-    list_display = ('id','type_provider' )
+    list_display = ('id' ,)
     resource_class = ProviderResource
+
+@admin.register(MedicalService)
+class MedicalServiceAdmin(ImportExportModelAdmin):
+
+    list_display = ('id' ,'name')
+    resource_class = MedicalServiceResource    

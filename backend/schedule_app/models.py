@@ -2,20 +2,28 @@ from django.db import models
 from doctor_app.models import Provider
 
 class WorkDay(models.Model):
-    DAY_SELECT=(('sunday','sunday'),('monday','monday'),('tuesday','tuesday'),('wednesday','wednesday'),('thursday','thursday'),('friday','friday'),('saturday','saturday'))
-    day=models.CharField(max_length=200, choices=DAY_SELECT,blank=True, null=True)
-    visit_num=models.PositiveIntegerField(default=2)
-    start_hour=models.TimeField()
-    end_hour=models.TimeField()
+    class Weekday(models.IntegerChoices):
+        MONDAY = 0, 'Monday'
+        TUESDAY = 1, 'Tuesday'
+        WEDNESDAY = 2, 'Wednesday'
+        THURSDAY = 3, 'Thursday'
+        FRIDAY = 4, 'Friday'
+        SATURDAY = 5, 'Saturday'
+        SUNDAY = 6, 'Sunday'
+
+    day=models.PositiveSmallIntegerField(choices=Weekday.choices, default=0)
+    provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE,related_name='provider_workday',null=True)
+    is_active = models.BooleanField(default=True)
     def __str__(self) :
         return str(self.id)
-    
-
-
-    
-
-class Schedule(models.Model):
-    provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE,related_name='provider_schedule')
-    working_days=models.ManyToManyField(WorkDay)
+ 
+class WorkHour(models.Model):
+    workday_related=models.ForeignKey(WorkDay,on_delete=models.CASCADE,related_name='workhour_workday')
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     def __str__(self) :
-        return str(self.id)    
+        return str(self.id)
+       
+
+
+    

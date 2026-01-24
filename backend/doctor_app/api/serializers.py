@@ -14,11 +14,18 @@ from doctor_app.models import *
     
 
   
-class ServiceSerializer(serializers.ModelSerializer):
+class CenterSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Service
+        model = Center
         fields = '__all__'
+
+class MedicalServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MedicalService
+        fields = '__all__'
+
 
 class ExpertizeSerializer(serializers.ModelSerializer):
 

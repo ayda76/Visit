@@ -86,9 +86,9 @@ class PasswordChangeView(APIView):
     def post(self, request):
         serializer = PasswordChangeSerializer(data=request.data)
         if serializer.is_valid():
-            userSelecte = Account.get_user_jwt(self , request).user
+            userSelected = Account.get_user_jwt(self , request).user
             # Validate old and new passwords using Django's PasswordChangeForm
-            form = PasswordChangeForm(userSelecte, serializer.validated_data)
+            form = PasswordChangeForm(userSelected, serializer.validated_data)
             if form.is_valid():
                 # Save the new password
                 form.save()

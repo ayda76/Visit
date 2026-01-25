@@ -14,20 +14,12 @@ class Center(models.Model):
     def __str__(self) :
         return self.name
     
-class MedicalService(models.Model):
-    name         = models.CharField(max_length=500, blank=True, null=True)
-    duration_min = models.PositiveIntegerField(default=10)
-    descripton   = models.TextField()
-    
-    def __str__(self) :
-        return self.name
+
 
 class Provider(models.Model):
 
     name              = models.CharField(max_length=500, blank=True, null=True)
-    
     Center_related    = models.ForeignKey(Center, on_delete=models.CASCADE, related_name="Center_provider",blank=True, null=True )
-    service_related   = models.OneToOneField(MedicalService,on_delete=models.CASCADE, related_name="provider_service",blank=True, null=True)
     is_active         = models.BooleanField(default=True)
     
     def __str__(self) :

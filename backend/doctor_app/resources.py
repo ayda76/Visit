@@ -24,7 +24,7 @@ class ProviderResource(resources.ModelResource):
           model = Provider
  
 
-class MedicalServiceResource(resources.ModelResource):
-     class Meta:
-          model = MedicalService 
+# class MedicalServiceResource(resources.ModelResource):
+#      class Meta:
+#           model = MedicalService 
    

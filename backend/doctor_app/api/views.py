@@ -26,11 +26,11 @@ class CenterViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
 
 
-class MedicalServiceViewSet(viewsets.ModelViewSet):
-    queryset = MedicalService.objects.all()
-    serializer_class = MedicalServiceSerializer
-    pagination_class=None
-    my_tags = ["Doctor"]
+# class MedicalServiceViewSet(viewsets.ModelViewSet):
+#     queryset = MedicalService.objects.all()
+#     serializer_class = MedicalServiceSerializer
+#     pagination_class=None
+#     my_tags = ["Doctor"]
 
 class ExpertizeViewSet(viewsets.ModelViewSet):
     queryset = Expertize.objects.all()
@@ -55,3 +55,30 @@ class ProviderViewSet(viewsets.ModelViewSet):
     serializer_class =  ProviderSerializer
     pagination_class=None
     my_tags = ["Doctor"]
+    
+    # @action
+    # def ProviderSlots(self,serializer):
+    #     instance_provider=self.get_object()
+        
+
+    #     selected_workdays=instance_provider.provider_workday.all()
+    #     for day in selected_workdays:
+    #         duration=day.duration_min
+    #         day_slots={
+    #                 'day':day.day,
+    #                 'duration':duration,
+    #                 'hours':[]
+    #             }
+    #         selected_hours=day.workhour_workday.all()
+    #         for hour_selected in selected_hours:
+    #             day_slots['hours'].append({
+    #                 'strat_time':hour_selected.start_time,
+    #                 'end_time' : hour_selected.end_time
+    #             })
+                
+  
+           
+
+                
+        
+    

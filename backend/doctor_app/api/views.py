@@ -6,12 +6,13 @@ from rest_framework import status
 
 from rest_framework import generics
 from django.db.models import Q
-from django.contrib.auth.forms import PasswordChangeForm
 from rest_framework.views import APIView
-from drf_yasg.utils import swagger_auto_schema 
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
+
+from datetime import datetime, timedelta, date
+from rest_framework.response import Response
 
 from account_app.api.serializers import *
 from account_app.models import *
@@ -56,25 +57,67 @@ class ProviderViewSet(viewsets.ModelViewSet):
     pagination_class=None
     my_tags = ["Doctor"]
     
-    # @action
-    # def ProviderSlots(self,serializer):
-    #     instance_provider=self.get_object()
+    @action(detail=True, methods=['get'])
+    def slots(self, request, pk=None):
+        instance_provider=self.get_object()
         
 
-    #     selected_workdays=instance_provider.provider_workday.all()
-    #     for day in selected_workdays:
-    #         duration=day.duration_min
-    #         day_slots={
-    #                 'day':day.day,
-    #                 'duration':duration,
-    #                 'hours':[]
-    #             }
-    #         selected_hours=day.workhour_workday.all()
-    #         for hour_selected in selected_hours:
-    #             day_slots['hours'].append({
-    #                 'strat_time':hour_selected.start_time,
-    #                 'end_time' : hour_selected.end_time
-    #             })
+        start_date_str = request.query_params.get('start_date')
+        if start_date_str:
+            start_date=date.fromisoformat(start_date_str)
+        else:
+            start_date=date.today()
+
+        one_week=[
+            {'date':start_date,
+             'weekday':start_date.weekday},]
+        
+        for index in range(7):
+            new_date=start_date+timedelta(day=index)
+            data={
+                'date':new_date,
+                'weekday':new_date.weekday()
+                
+            }
+            one_week.append(data)
+            
+        
+        selected_workdays=instance_provider.provider_workday.all()
+        week_slots=[]
+        for day in selected_workdays:
+            duration=timedelta(minutes=day.duration_min)
+            date_day=one_week['date'][['weekday']==day.day]
+            day_slots={
+                    'date':date_day,
+                    'day':day.day,
+                    'duration':duration,
+                    'hours':[]
+                }
+            
+            selected_hours=day.workhour_workday.all()
+            for hour_selected in selected_hours:
+                
+                start_point=hour_selected.start_time
+                slots=[]
+                while start_point <hour_selected.end_time:
+                    end_point=start_point + duration
+                    slot={
+                        "start":start_point,
+                        "end":end_point
+                    }
+                    slots.append(slot)
+                    start_point=end_point
+                    
+                    
+                day_slots['hours'].append({
+                    'strat_time':hour_selected.start_time,
+                    'end_time' : hour_selected.end_time,
+                    'slots':slots
+                })
+                
+            week_slots.append(day_slots)
+            
+        return week_slots
                 
   
            

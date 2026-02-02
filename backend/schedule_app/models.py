@@ -11,8 +11,9 @@ class WorkDay(models.Model):
         SATURDAY = 5, 'Saturday'
         SUNDAY = 6, 'Sunday'
 
-    day=models.PositiveSmallIntegerField(choices=Weekday.choices, default=0)
-    provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE,related_name='provider_workday',null=True)
+    day =models.PositiveSmallIntegerField(choices=Weekday.choices, default=0)
+    provider_related =models.ForeignKey(Provider,on_delete=models.CASCADE,related_name='provider_workday',null=True)
+    duration_min = models.PositiveIntegerField(default=10)
     is_active = models.BooleanField(default=True)
     def __str__(self) :
         return str(self.id)

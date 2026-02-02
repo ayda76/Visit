@@ -20,11 +20,11 @@ class CenterSerializer(serializers.ModelSerializer):
         model = Center
         fields = '__all__'
 
-class MedicalServiceSerializer(serializers.ModelSerializer):
+# class MedicalServiceSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = MedicalService
-        fields = '__all__'
+#     class Meta:
+#         model = MedicalService
+#         fields = '__all__'
 
 
 class ExpertizeSerializer(serializers.ModelSerializer):

@@ -28,6 +28,8 @@ urlpatterns = [
     path("account/", include("account_app.api.urls")),
     path("doctor/", include("doctor_app.api.urls")),
     path("schedule/", include("schedule_app.api.urls")),
+    path("book/", include("book_app.api.urls")),
+    
     path('auth/', include('djoser.urls')),
     path("auth/", include('djoser.urls.jwt')),
     # path('silk/', include('silk.urls', namespace='silk')),

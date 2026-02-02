@@ -94,7 +94,8 @@ INSTALLED_APPS = [
     
     'account_app',
     'doctor_app',
-    'schedule_app'
+    'schedule_app',
+    'book_app'
     
 
 ]

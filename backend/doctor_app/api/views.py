@@ -20,6 +20,8 @@ from account_app.models import *
 from doctor_app.api.serializers import *
 from doctor_app.models import *
 
+from book_app.models import Appointment
+
 class CenterViewSet(viewsets.ModelViewSet):
     queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
     serializer_class = CenterSerializer
@@ -67,6 +69,16 @@ class ProviderViewSet(viewsets.ModelViewSet):
         else:
             start_date=date.today()
 
+        appointments_selected=Appointment.objects.filter(
+            provider_related=instance_provider,
+            date__range=[start_date,start_date+timedelta(days=6)],
+            is_canceled=False
+        )
+        
+        reserved={
+            (appointment.date,appointment.start_time,appointment.end_time):True
+            for appointment in appointments_selected
+        }
         
         result=[]
         
@@ -75,7 +87,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
             
             workday_selected=instance_provider.provider_workday.filter(day=current_date.weekday(), is_active=True).first()
             data={
-                'date':current_date,
+                'date':current_date.isoformat(),
                 'weekday':current_date.weekday(),
                 'slots':[]
                 
@@ -99,9 +111,15 @@ class ProviderViewSet(viewsets.ModelViewSet):
                     slot_end=slot_start + duration
                     if slot_end>end_dt:
                         break
+                    #key value: if the current data is in the reserved dict then returns True
+                    is_reserved=reserved.get(
+                        (current_date,slot_start.time(),slot_end.time()),
+                        False
+                    )
                     slot={
                         "start":slot_start.time().isoformat(),
-                        "end":slot_end.time().isoformat()
+                        "end":slot_end.time().isoformat(),
+                        "reserved":is_reserved
                     }
                     data['slots'].append(slot)
                     slot_start=slot_end

@@ -20,6 +20,8 @@ from account_app.models import *
 from doctor_app.api.serializers import *
 from doctor_app.models import *
 
+from book_app.models import Appointment
+
 class CenterViewSet(viewsets.ModelViewSet):
     queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
     serializer_class = CenterSerializer
@@ -60,64 +62,72 @@ class ProviderViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def slots(self, request, pk=None):
         instance_provider=self.get_object()
-        
-
+    
         start_date_str = request.query_params.get('start_date')
         if start_date_str:
             start_date=date.fromisoformat(start_date_str)
         else:
             start_date=date.today()
 
-        one_week=[
-            {'date':start_date,
-             'weekday':start_date.weekday},]
+        appointments_selected=Appointment.objects.filter(
+            provider_related=instance_provider,
+            date__range=[start_date,start_date+timedelta(days=6)],
+            is_canceled=False
+        )
+        
+        reserved={
+            (appointment.date,appointment.start_time,appointment.end_time):True
+            for appointment in appointments_selected
+        }
+        
+        result=[]
         
         for index in range(7):
-            new_date=start_date+timedelta(day=index)
+            current_date=start_date+timedelta(days=index)
+            
+            workday_selected=instance_provider.provider_workday.filter(day=current_date.weekday(), is_active=True).first()
             data={
-                'date':new_date,
-                'weekday':new_date.weekday()
+                'date':current_date.isoformat(),
+                'weekday':current_date.weekday(),
+                'slots':[]
                 
             }
-            one_week.append(data)
             
-        
-        selected_workdays=instance_provider.provider_workday.all()
-        week_slots=[]
-        for day in selected_workdays:
-            duration=timedelta(minutes=day.duration_min)
-            date_day=one_week['date'][['weekday']==day.day]
-            day_slots={
-                    'date':date_day,
-                    'day':day.day,
-                    'duration':duration,
-                    'hours':[]
-                }
+            if not workday_selected:
+                result.append(data)
+                continue
             
-            selected_hours=day.workhour_workday.all()
-            for hour_selected in selected_hours:
+            
+            duration=timedelta(minutes=workday_selected.duration_min)
+            
+            selected_hours=workday_selected.workhour_workday.all()
+            for hour_selected in selected_hours:  
+                start_dt = datetime.combine(current_date, hour_selected.start_time)
+                end_dt   = datetime.combine(current_date, hour_selected.end_time)
                 
-                start_point=hour_selected.start_time
-                slots=[]
-                while start_point <hour_selected.end_time:
-                    end_point=start_point + duration
+                
+                slot_start=start_dt
+                while slot_start <end_dt:
+                    slot_end=slot_start + duration
+                    if slot_end>end_dt:
+                        break
+                    #key value: if the current data is in the reserved dict then returns True
+                    is_reserved=reserved.get(
+                        (current_date,slot_start.time(),slot_end.time()),
+                        False
+                    )
                     slot={
-                        "start":start_point,
-                        "end":end_point
+                        "start":slot_start.time().isoformat(),
+                        "end":slot_end.time().isoformat(),
+                        "reserved":is_reserved
                     }
-                    slots.append(slot)
-                    start_point=end_point
+                    data['slots'].append(slot)
+                    slot_start=slot_end
                     
-                    
-                day_slots['hours'].append({
-                    'strat_time':hour_selected.start_time,
-                    'end_time' : hour_selected.end_time,
-                    'slots':slots
-                })
-                
-            week_slots.append(day_slots)
+            result.append(data)
             
-        return week_slots
+            
+        return Response(result)
                 
   
            

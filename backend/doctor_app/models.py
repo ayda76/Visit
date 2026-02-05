@@ -19,6 +19,7 @@ class Center(models.Model):
 class Provider(models.Model):
 
     name              = models.CharField(max_length=500, blank=True, null=True)
+    account_related   = models.OneToOneField(Account, on_delete=models.CASCADE)
     Center_related    = models.ForeignKey(Center, on_delete=models.CASCADE, related_name="Center_provider",blank=True, null=True )
     is_active         = models.BooleanField(default=True)
     
@@ -41,8 +42,7 @@ class SubExpertize(models.Model):
         return self.name
     
 class Doctor(models.Model):
-    provider_related       = models.OneToOneField(Provider,on_delete=models.CASCADE, related_name="provider_doctor",blank=True, null=True)
-    account_related        = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="account_doctor" )
+    provider_related       = models.OneToOneField(Provider,on_delete=models.CASCADE, related_name="provider_doctor")
     expertize_related      = models.ForeignKey(Expertize,on_delete=models.CASCADE, related_name="expertize_doctor" )
     subExpertize_relateds  = models.ManyToManyField(SubExpertize,related_name="subexpertize_doctor", null=True )
     degree                 = models.CharField(max_length=200, blank=True, null=True)

@@ -57,4 +57,17 @@ class Doctor(models.Model):
     def __str__(self) :
         return str(self.id)
     
+  
+class ProviderApplication(models.Model):
+    ROLE_CHOICES=(('doctor','doctor'),('center','center'))
+    role_requested = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    account_related= models.OneToOneField(Account,on_delete=models.CASCADE)
+    documents=models.FileField(upload_to='provider_documents/')
+    is_approved=models.BooleanField(default=False)
     
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.account.lastname} - {self.role_requested}"
+      

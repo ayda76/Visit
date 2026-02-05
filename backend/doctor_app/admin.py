@@ -37,6 +37,12 @@ class ProviderAdmin(ImportExportModelAdmin):
     list_display = ('id' ,)
     resource_class = ProviderResource
 
+@admin.register(ProviderApplication)
+class ProviderApplicationAdmin(ImportExportModelAdmin):
+
+    list_display = ('id' ,)
+    resource_class = ProviderApplicationResource
+
 # @admin.register(MedicalService)
 # class MedicalServiceAdmin(ImportExportModelAdmin):
 

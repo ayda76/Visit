@@ -131,6 +131,11 @@ class ProviderViewSet(viewsets.ModelViewSet):
                 
   
            
+class ProviderApplicationViewSet(viewsets.ModelViewSet):
+    queryset =  ProviderApplication.objects.all()
+    serializer_class =  ProviderApplicationSerializer
+    pagination_class=None
+    my_tags = ["Doctor"]
 
                 
         

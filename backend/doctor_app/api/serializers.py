@@ -50,3 +50,9 @@ class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider
         fields = '__all__'   
+        
+class ProviderApplicationSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model= ProviderApplication
+        feilds ='__all__'

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from doctor_app.models import *
-
+from account_app.models import *
 
 # class PasswordChangeSerializer(serializers.Serializer):
 #     old_password = serializers.CharField(required=True)
@@ -55,4 +55,11 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= ProviderApplication
-        feilds ='__all__'
+        fields ='__all__'
+        
+    def create(self,validated_data):
+        account = validated_data["account_related"]
+        application = super().create(validated_data)
+        account.status = Status.PENDING_REVIEW
+        account.save()
+        return application

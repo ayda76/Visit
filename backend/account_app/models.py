@@ -7,20 +7,40 @@ from rest_framework import exceptions
 import jwt
 from jwt import ExpiredSignatureError, InvalidTokenError
 
+class Role(models.TextChoices):
+    PATIENT = "patient", "patient"      
+    DOCTOR_PENDING = "doctor_pending", "doctor_pending"
+    DOCTOR = "doctor", "doctor"     
 
+    CENTER_PENDING = "center_pending", "center_pending"
+    CENTER_MANAGER = "center_manager", "center_manager"
+
+    ADMIN = "admin", "admin"
+
+
+class Status(models.TextChoices):
+    PENDING = "pending", "pending"      
+    PENDING_REVIEW = "pending_review", "pending_review"
+    ACTIVE = "active", "active"     
+    REJECTED = "rejected", "rejected"
+    SUSPENDED = "suspended", "suspended"
+
+    
 
 class Account(models.Model):
+    role          = models.CharField(max_length=20, choices=Role.choices, default=Role.PATIENT)
+    status        = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     user          = models.OneToOneField(User, on_delete=models.CASCADE, related_name="account" )
     firstname     = models.CharField(max_length=200, blank=True, null=True)
     lastname      = models.CharField(max_length=200, blank=True, null=True)
     email         = models.EmailField()
     phone         = models.DecimalField(blank=True , null=True, max_digits=11, decimal_places=0)
     img           = models.ImageField(upload_to="avatars",blank=True , null=True)
-    is_doctor     = models.BooleanField(default=False,blank=True , null=True)
+    
 
     
     def __str__(self) :
-        return f"{self.firstname}{self.lastname}"
+        return f"{self.firstname or ''} {self.lastname or ''}".strip()
     
     def get_user_jwt(self,request):
         

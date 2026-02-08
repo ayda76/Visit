@@ -10,5 +10,5 @@ from .models import *
 @admin.register(Account)
 class AccountAdmin(ImportExportModelAdmin):
 
-    list_display = ('id','firstname','lastname','is_doctor' )
+    list_display = ('id','firstname','lastname', )
     resource_class = AccountResource

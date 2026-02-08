@@ -48,6 +48,24 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = '__all__'
         
+    def create(self,validated_data):
+        role_selected=validated_data.pop('role')
+        if role_selected == Role.PATIENT:
+            status = Status.ACTIVE
+        else:
+            status = Status.PENDING
+        
+        account = Account.objects.create(
+            user=validated_data["user"],
+            role=role_selected,
+            status=status,
+            firstname=validated_data["firstname"],
+            lastname=validated_data["lastname"],
+            email=validated_data["email"],
+            phone=validated_data["phone"])
+        
+        return account
+        
         
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

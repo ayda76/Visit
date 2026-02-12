@@ -69,6 +69,8 @@ services:
       sh -c "
       python manage.py migrate --noinput &&
       python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=Visit.settings
     volumes:
       - ./backend:/backend
     env_file:
@@ -79,62 +81,71 @@ services:
       - visit_db
       - visit_redis
       # - prometheus
-
+  visit_rabbitmq:
+    image: rabbitmq:3-management
+    container_name: visit_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
   # =====================
   # Celery Worker
   # =====================
-  # visit_celery:
-  #   container_name: visit_celery_worker
-  #   build:
-  #     context: ./backend
-  #   working_dir: /backend
-  #   command: sh -c "cd /backend && celery -A Visit worker --loglevel=info"
-  #   volumes:
-  #     - ./backend:/backend
-  #   env_file:
-  #     - ./backend/.env
+  visit_celery:
+    container_name: visit_celery_worker
+    build:
+      context: ./backend
+    working_dir: /backend
+    command: sh -c "cd /backend && celery -A Visit worker --loglevel=info"
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - ./backend/.env
 
-  #   environment:
-  #     - DJANGO_SETTINGS_MODULE=Academy.settings
-  #     - PYTHONPATH=/backend
-  #   depends_on:
-  #     - visit_redis
-  #     - visit_db
+    environment:
+      - DJANGO_SETTINGS_MODULE=Visit.settings
+      - PYTHONPATH=/backend
+    depends_on:
+      - visit_rabbitmq
+      - visit_redis
   # =====================
   # Celery Beat
   # =====================
-  # visit_celery_beat:
-  #   container_name: visit_celery_beat
-  #   build:
-  #     context: ./backend
-  #   working_dir: /backend
-  #   command: sh -c "cd /backend &&  celery -A Visit beat --loglevel=info"
-  #   volumes:
-  #     - ./backend:/backend
-  #   env_file:
-  #     - ./backend/.env
+  visit_celery_beat:
+    container_name: visit_celery_beat
+    build:
+      context: ./backend
+    working_dir: /backend
+    command: sh -c "cd /backend &&  celery -A Visit beat --loglevel=info"
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - ./backend/.env
 
-  #   environment:
-  #     - DJANGO_SETTINGS_MODULE=Visit.settings
-  #     - PYTHONPATH=/backend
-  #   depends_on:
-  #     - visit_redis
-  #     - visit_db
+    environment:
+      - DJANGO_SETTINGS_MODULE=Visit.settings
+      - PYTHONPATH=/backend
+    depends_on:
+      - visit_rabbitmq
+      - visit_redis
 
   # # =====================
   # # Flower (Celery Monitor)
   # # =====================
-  # visit_flower:
-  #   image: mher/flower
-  #   container_name: visit_flower
-  #   ports:
-  #     - "5555:5555"
-  #   environment:
-  #     - FLOWER_PORT=5555
-  #     - CELERY_BROKER_URL=${CELERY_BROKER_URL}
-  #   depends_on:
-  #     - visit_redis
-  #     - visit_celery
+  visit_flower:
+    image: mher/flower
+    container_name: visit_flower
+    ports:
+      - "5555:5555"
+    environment:
+      - FLOWER_PORT=5555
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    depends_on:
+      - visit_rabbitmq
+      - visit_celery
 
   # =====================
   # Frontend (Next.js / Vite)
@@ -156,15 +167,5 @@ services:
   #   depends_on:
   #     - visit_backend
 
-  visit_rabbitmq:
-    image: rabbitmq:3-management
-    container_name: visit_rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
 volumes:
   pgdata:

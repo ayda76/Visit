@@ -22,6 +22,8 @@ from doctor_app.models import *
 
 from book_app.models import Appointment
 from django.db import transaction
+from doctor_app.tasks import send_acceptance_email
+
 
 class CenterViewSet(viewsets.ModelViewSet):
     queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
@@ -146,22 +148,25 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
        
         account_related=providerapplication_selected.account_related
         with transaction.atomic():
+            #assigning status and roles to accounts
             if decision=='approve':
                 account_related.status=Status.ACTIVE
                 providerapplication_selected.status=StatusApplication.ACCEPTED
                 if account_related.role==Role.DOCTOR_PENDING:
                     provider = Provider.objects.create(account=account_related ,is_active=True)
                     account_related.role=Role.DOCTOR
-                if account_related.role==Role.CENTER_PENDING:
+                elif account_related.role==Role.CENTER_PENDING:
                     center_created=Center.objects.create(manager=account_related)
                     provider = Provider.objects.create(Center_related=center_created ,is_active=True)
                     account_related.role=Role.CENTER_MANAGER
-                
-            
+                #send email to user
+                send_acceptance_email.delay(account_related,True)
             
             elif decision=='reject':
                 account_related.status=Status.REJECTED
                 providerapplication_selected.status=StatusApplication.REJECTED
+                #send email to user
+                send_acceptance_email.delay(account_related,False)
         
             else:
                 return Response({"error": "Invalid decision"}, status=400)

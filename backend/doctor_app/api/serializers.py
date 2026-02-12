@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from doctor_app.models import *
 from account_app.models import *
-
+from account_app.api.serializers import *
 # class PasswordChangeSerializer(serializers.Serializer):
 #     old_password = serializers.CharField(required=True)
 #     new_password1 = serializers.CharField(required=True)
@@ -47,6 +47,13 @@ class DoctorSerializer(serializers.ModelSerializer):
         
 class ProviderSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Provider
+        fields = '__all__'   
+
+class ProviderRelatedSerializer(serializers.ModelSerializer):
+    account_related=AccountSerializer(required=False)
+    Center_related=CenterSerializer(required=False)
     class Meta:
         model = Provider
         fields = '__all__'   

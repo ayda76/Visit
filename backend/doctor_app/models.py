@@ -2,6 +2,14 @@ from django.db import models
 from account_app.models import Account
 # Create your models here.
 
+class StatusApplication(models.TextChoices):
+    PENDING = "pending", "pending"      
+
+    ACCEPTED = "accepted", "accepted"     
+    REJECTED = "rejected", "rejected"
+    
+
+
 class Center(models.Model):
     name                   = models.CharField(max_length=200, blank=True, null=True)
     manager                = models.ForeignKey(Account,related_name='Center_manager_account',on_delete=models.CASCADE,)
@@ -59,11 +67,12 @@ class Doctor(models.Model):
     
   
 class ProviderApplication(models.Model):
-    ROLE_CHOICES=(('doctor','doctor'),('center','center'))
-    role_requested = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    account_related= models.OneToOneField(Account,on_delete=models.CASCADE)
-    documents=models.FileField(upload_to='provider_documents/')
-    is_approved=models.BooleanField(default=False)
+    ROLE_CHOICES    = (('doctor','doctor'),('center','center'))
+    status          = models.CharField(max_length=20, choices=StatusApplication.choices, default=StatusApplication.PENDING)
+    role_requested  = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    account_related = models.OneToOneField(Account,on_delete=models.CASCADE)
+    documents       = models.FileField(upload_to='provider_documents/')
+    is_approved     = models.BooleanField(default=False)
     
     submitted_at = models.DateTimeField(auto_now_add=True)
     approved_at = models.DateTimeField(null=True, blank=True)

@@ -78,5 +78,5 @@ class ProviderApplication(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.account.lastname} - {self.role_requested}"
+        return f"{self.account_related.lastname} - {self.role_requested}"
       

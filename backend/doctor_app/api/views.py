@@ -32,11 +32,6 @@ class CenterViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
 
 
-# class MedicalServiceViewSet(viewsets.ModelViewSet):
-#     queryset = MedicalService.objects.all()
-#     serializer_class = MedicalServiceSerializer
-#     pagination_class=None
-#     my_tags = ["Doctor"]
 
 class ExpertizeViewSet(viewsets.ModelViewSet):
     queryset = Expertize.objects.all()
@@ -57,7 +52,7 @@ class DoctorViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
 
 class ProviderViewSet(viewsets.ModelViewSet):
-    queryset =  Provider.objects.select_related('doctor_related','service_related')
+    queryset =  Provider.objects.select_related('account_related','Center_related')
     serializer_class =  ProviderSerializer
     pagination_class=None
     my_tags = ["Doctor"]
@@ -153,28 +148,32 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
                 account_related.status=Status.ACTIVE
                 providerapplication_selected.status=StatusApplication.ACCEPTED
                 if account_related.role==Role.DOCTOR_PENDING:
-                    provider = Provider.objects.create(account=account_related ,is_active=True)
+                    provider = Provider.objects.create(account_related=account_related ,is_active=True)
                     account_related.role=Role.DOCTOR
+
                 elif account_related.role==Role.CENTER_PENDING:
                     center_created=Center.objects.create(manager=account_related)
                     provider = Provider.objects.create(Center_related=center_created ,is_active=True)
                     account_related.role=Role.CENTER_MANAGER
+                 
                 #send email to user
-                send_acceptance_email.delay(account_related,True)
+                send_acceptance_email.delay(account_related.email,True)
             
             elif decision=='reject':
                 account_related.status=Status.REJECTED
                 providerapplication_selected.status=StatusApplication.REJECTED
+           
                 #send email to user
-                send_acceptance_email.delay(account_related,False)
+                send_acceptance_email.delay(account_related.email,False)
         
             else:
                 return Response({"error": "Invalid decision"}, status=400)
         
-        account_related.save()
-        providerapplication_selected.save()
-
-        return Response({"status":providerapplication_selected.status})
+            account_related.save()
+            providerapplication_selected.save()
+            
+        application_serialized=ProviderApplicationSerializer(providerapplication_selected).data
+        return Response(application_serialized)
         
         
            

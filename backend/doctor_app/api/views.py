@@ -23,7 +23,10 @@ from doctor_app.models import *
 from book_app.models import Appointment
 from django.db import transaction
 from doctor_app.tasks import send_acceptance_email
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
+from doctor_app.api.filters import *
+from django_filters.rest_framework import DjangoFilterBackend
 
 class CenterViewSet(viewsets.ModelViewSet):
     queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
@@ -54,8 +57,14 @@ class DoctorViewSet(viewsets.ModelViewSet):
 class ProviderViewSet(viewsets.ModelViewSet):
     queryset =  Provider.objects.select_related('account_related','Center_related')
     serializer_class =  ProviderSerializer
-    pagination_class=None
+    
     my_tags = ["Doctor"]
+    
+    pagination_class=PageNumberPagination
+    pagination_class.page_size=5
+    filterset_class=ProviderFilter
+    filter_backends=[DjangoFilterBackend]
+
     
     @action(detail=True, methods=['get'])
     def slots(self, request, pk=None):

@@ -185,10 +185,11 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
         return Response(application_serialized)
         
         
-           
-           
-           
-       
+class ProviderReviewViewSet(viewsets.ModelViewSet):
+    queryset =  ProviderReview.objects.all()
+    serializer_class =  ProviderReviewSerializer
+    pagination_class=None
+    my_tags = ["Doctor"]   
                 
         
     

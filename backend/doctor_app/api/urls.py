@@ -10,6 +10,7 @@ router.register("SubExpertize", SubExpertizeViewSet)
 router.register("Doctor", DoctorViewSet)
 router.register("Provider", ProviderViewSet)
 router.register("ProviderApplication", ProviderApplicationViewSet)
+router.register("ProviderReview", ProviderReviewViewSet)
 # router.register("MedicalService", MedicalServiceViewSet)
 
 

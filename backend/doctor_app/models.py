@@ -80,3 +80,12 @@ class ProviderApplication(models.Model):
     def __str__(self):
         return f"{self.account_related.lastname} - {self.role_requested}"
       
+class ProviderReview(models.Model):
+    patient_related=models.ForeignKey(Account,on_delete=models.CASCADE, related_name="patient_review")
+    provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE, related_name="provider_review")
+    rating =models.SmallIntegerField(default=1)
+    comment= models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+    def __str__(self):
+        return f"{self.patient_related.lastname} review"

@@ -70,3 +70,11 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
         account.status = Status.PENDING_REVIEW
         account.save()
         return application
+    
+    
+class ProviderReviewSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model= ProviderReview
+        fields ='__all__'   
+    

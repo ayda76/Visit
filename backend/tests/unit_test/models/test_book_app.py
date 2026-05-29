@@ -1,9 +1,6 @@
 import pytest
-from rest_framework.test import APIRequestFactory
-
-from factories.factory_account import AccountFactory
 from factories.factory_book import AppointmentFactory
-from tests.utils import generate_access_token
+
 
 @pytest.mark.django_db
 class TestAppointmentModel:

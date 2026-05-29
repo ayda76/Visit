@@ -2,7 +2,7 @@ import pytest
 from rest_framework.test import APIRequestFactory
 from factories.factory_account import AccountFactory
 from rest_framework_simplejwt.tokens import RefreshToken
-from tests.utils import get_tokens_for_user
+from tests.utils import generate_access_token
 
 
 @pytest.mark.django_db
@@ -27,7 +27,7 @@ class TestAccountModel:
         
     def test_get_user_jwt_valid_token(self):
         account=AccountFactory()
-        token=get_tokens_for_user(account.user)
+        token=generate_access_token(account.user)
         factory = APIRequestFactory()
 
         request = factory.get(

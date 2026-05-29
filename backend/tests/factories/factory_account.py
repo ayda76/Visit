@@ -3,7 +3,7 @@ from faker import Faker
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from account_app.models import Account, Role,Status
-from tests.factories import UserFactory
+from tests.factories.factory_user import UserFactory
 
 
 fake=Faker()

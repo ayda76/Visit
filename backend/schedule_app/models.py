@@ -1,4 +1,5 @@
 from django.db import models
+
 from doctor_app.models import Provider
 
 class WorkDay(models.Model):

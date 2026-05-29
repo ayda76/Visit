@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIRequestFactory
+
 from factories.factory_account import AccountFactory
-from rest_framework_simplejwt.tokens import RefreshToken
 from tests.utils import generate_access_token
 
 

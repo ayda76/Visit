@@ -13,8 +13,8 @@ class AccountFactory(factory.django.DjangoModelFactory):
         model=Account
 
     user=factory.SubFactory(UserFactory)
-    firstname = factory.Faker("first_name")
-    lastname = factory.Faker("last_name")
+    firstname = factory.Faker("name")
+    lastname = factory.Faker("name")
     email = factory.Sequence(lambda n: f"user{n}@test.com")
     #phone=factory.Sequence(lambda n: int(f"9{n:010d}"))
     phone=factory.Faker("numerify", text="09123654876")

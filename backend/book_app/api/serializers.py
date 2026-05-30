@@ -19,8 +19,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
             
             
         with transaction.atomic():
-            reserved_appointment=Appointment.objects.filter(provider_related=provider_related,date=date,start_time=start_time,end_time=end_time, is_canceled=False)
-                
+            reserved_appointment=Appointment.objects.filter(provider_related=provider_related,
+                                                            date=date,
+                                                            start_time=start_time,
+                                                            end_time=end_time,
+                                                            is_canceled=False)
+            print(f".........{reserved_appointment}")
             if reserved_appointment.exists():
                 raise serializers.ValidationError('این نوبت قبلا رزرو شده است')
                 

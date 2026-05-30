@@ -1,5 +1,6 @@
 from django.db import models
 from doctor_app.models import Provider
+from django.db.models import Q
 from account_app.models import *
 # Create your models here.
 
@@ -25,7 +26,16 @@ class Appointment(models.Model):
     updated_at        = models.DateTimeField(auto_now=True)
     
     class Meta:
-        unique_together = ("provider_related", "date", "start_time", "end_time")
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+               
+                    "provider_related",
+                    "date",
+                    "start_time",
+                    "end_time",],
+                condition=Q(is_canceled=False),
+                name="unique_active_appointment",) ]
 
     
     def __str__(self) :

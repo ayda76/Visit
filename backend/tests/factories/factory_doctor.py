@@ -59,7 +59,7 @@ class DoctorFactory(factory.django.DjangoModelFactory):
     class Meta:
         model=Doctor
         
-    name=factory.Faker("name")
+
     provider_related=factory.SubFactory(ProviderFactory)
     expertize_related=factory.SubFactory(ExpertizeFactory)
     degree=factory.Faker("name")

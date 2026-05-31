@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 
 from rest_framework import status
 from rest_framework.decorators import action
-from services import  add_account
+from book_app.api.services import  add_account
 
 from book_app.api.serializers import AppointmentSerializer
 from book_app.models import Appointment

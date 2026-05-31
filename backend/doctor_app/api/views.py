@@ -1,32 +1,45 @@
 
 from rest_framework import generics, viewsets
-from django.contrib.auth import authenticate
+
 from rest_framework.response import Response
 from rest_framework import status
-
-from rest_framework import generics
-from django.db.models import Q
-from rest_framework.views import APIView
-
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 
 from datetime import datetime, timedelta, date
 from rest_framework.response import Response
-
-from account_app.api.serializers import *
-from account_app.models import *
-
-from doctor_app.api.serializers import *
-from doctor_app.models import *
-
-from book_app.models import Appointment
 from django.db import transaction
-from doctor_app.tasks import send_acceptance_email
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
-from doctor_app.api.filters import *
-from django_filters.rest_framework import DjangoFilterBackend
+from account_app.api.serializers import AccountSerializer
+from account_app.models import (Role,
+                                Status,
+                                Account
+                               )
+from book_app.models import Appointment
+from doctor_app.tasks import send_acceptance_email
+from doctor_app.api.filters import ProviderFilter
+from doctor_app.api.serializers import (CenterSerializer,
+                                         ExpertizeSerializer,
+                                         SubExpertizeSerializer,
+                                         DoctorSerializer,
+                                         ProviderSerializer,
+                                         ProviderRelatedSerializer,
+                                         ProviderApplicationSerializer,
+                                         ProviderReviewSerializer) 
+                                  
+from doctor_app.models import (StatusApplication,
+                                Center,
+                                Provider,
+                                Expertize,
+                                SubExpertize,
+                                Doctor,
+                                ProviderApplication,
+                                ProviderReview)
+
+
+
+
 
 class CenterViewSet(viewsets.ModelViewSet):
     queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')

@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 
 from rest_framework import status
 from rest_framework.decorators import action
-
+from services import  add_account
 
 from book_app.api.serializers import AppointmentSerializer
 from book_app.models import Appointment
@@ -16,7 +16,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     my_tags = ["Book"]
     
     def perform_create(self, serializer):
-        instance=serializer.save()
+        instance=add_account(self,serializer)
         if instance:
             send_booked_email(instance.patient.email)
     

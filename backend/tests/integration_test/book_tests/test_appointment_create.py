@@ -53,7 +53,7 @@ def test_comment_create_not_login():
    
     response=client.post('/book/Appointment/',data)
     
-    assert response.status_code ==400
+    assert response.status_code ==401
     assert Appointment.objects.count() == 0
 
 
@@ -75,7 +75,7 @@ def test_comment_create_with_invalid_token():
         "end_time": time(10, 30),}    
     response=client.post('/book/Appointment/',data)
     
-    assert response.status_code ==400
+    assert response.status_code ==401
     
     assert Appointment.objects.count() == 0
    

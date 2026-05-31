@@ -67,7 +67,7 @@ class SubExpertizeViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
     
 class DoctorViewSet(viewsets.ModelViewSet):
-    queryset =  Doctor.objects.select_related('account_related','expertize_related').prefetch_related('providers_recommended','subExpertize_relateds')
+    queryset =  Doctor.objects.select_related('provider_related','expertize_related').prefetch_related('providers_recommended','subExpertize_relateds')
     serializer_class =  DoctorSerializer
     permission_classes=[Admin_Permissions]
     pagination_class=None

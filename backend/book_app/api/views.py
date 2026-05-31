@@ -3,6 +3,7 @@ from rest_framework import generics, viewsets
 
 from rest_framework import status
 from rest_framework.decorators import action
+from permissions import Appointment_Permissions
 from book_app.api.services import  add_account
 
 from book_app.api.serializers import AppointmentSerializer
@@ -13,6 +14,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.select_related('provider_related','patient')
     serializer_class = AppointmentSerializer
     pagination_class=None
+    permission_classes=[Appointment_Permissions]
     my_tags = ["Book"]
     
     def perform_create(self, serializer):

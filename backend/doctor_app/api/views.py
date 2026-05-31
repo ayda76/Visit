@@ -44,7 +44,7 @@ from doctor_app.models import (StatusApplication,
 
 
 class CenterViewSet(viewsets.ModelViewSet):
-    queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
+    queryset = Center.objects.select_related('manager')
     serializer_class = CenterSerializer
     permission_classes=[Admin_Permissions]
     pagination_class=None

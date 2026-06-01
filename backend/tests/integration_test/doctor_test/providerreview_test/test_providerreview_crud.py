@@ -35,120 +35,177 @@ def test_retrieve_review():
 
     assert response.data['patient_related'] == account.id
     
-# ##### DELETE #### 
-# @pytest.mark.django_db
-# def test_review_delete():
-#     account=AccountFactory(role=Role.ADMIN)
-#     user=account.user
-#     token=generate_access_token(user)
+##### DELETE #### 
+@pytest.mark.django_db
+def test_review_delete():
+    account=AccountFactory(role=Role.ADMIN)
+    user=account.user
+    token=generate_access_token(user)
     
-#     client=APIClient()
-#     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
 
-#     review=ProviderReviewFactory()
-#     response=client.delete(f'/doctor/ProviderReview/{review.id}/')
+    review=ProviderReviewFactory()
+    response=client.delete(f'/doctor/ProviderReview/{review.id}/')
 
-#     assert response.status_code==204
-#     assert ProviderReview.objects.count() ==0   
-    
-# @pytest.mark.django_db
-# def test_review_delete_not_admin():
-#     account=AccountFactory()
-#     user=account.user
-#     token=generate_access_token(user)
-    
-#     client=APIClient()
-#     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-
-#     review=ProviderReviewFactory()
-#     response=client.delete(f'/doctor/ProviderReview/{review.id}/')
-
-#     assert response.status_code == 401
-#     assert ProviderReview.objects.count() == 1 
-    
-    
-    
-# ##### UPDATE ####
-# @pytest.mark.django_db
-# def test_review_update_with_jwt():
-#     account_admin=AccountFactory(role=Role.ADMIN)
-#     user=account_admin.user
-#     token=generate_access_token(user)
-    
-#     client=APIClient()
-#     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-    
-#     review=ProviderReviewFactory()
-
-#     response=client.patch(f'/doctor/ProviderReview/{review.id}/',{'rating':2})
-
-#     assert response.status_code==200
-#     review.refresh_from_db()
-#     assert ProviderReview.objects.count() ==1
-#     assert response.data['rating'] == 2
-    
-# @pytest.mark.django_db
-# def test_review_update_without_admin():
-#     account_not_admin=AccountFactory()
-    
-#     user=account_not_admin.user
-#     token=generate_access_token(user)
-    
-#     client=APIClient()
-#     client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-    
-#     review=ProviderReviewFactory()
-
-#     response=client.patch(f'/doctor/ProviderReview/{review.id}/',{'rating':2})
-
-#     assert response.status_code==401
-
-# ##### CREATE ####
-# @pytest.mark.django_db
-# def test_review_create_with_jwt_admin():
-#     client=APIClient()
-    
-#     account_admin=AccountFactory(role=Role.ADMIN)
-#     user=account_admin.user
-#     token=generate_access_token(user)
+    assert response.status_code==204
+    assert ProviderReview.objects.count() ==0   
  
-#     client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-#     account=AccountFactory()
-#     provider=ProviderFactory()
-#     data={
-#         "patient_related":account.id,
-#         "provider_related":provider.id,
-#         "rating":3,
-#         "comment":"not bad"
-#     }
-#     response=client.post('/doctor/ProviderReview/',data)
+@pytest.mark.django_db
+def test_review_delete():
+    account=AccountFactory(role=Role.PATIENT)
+    user=account.user
+    token=generate_access_token(user)
     
-#     assert response.status_code ==201
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+    review=ProviderReviewFactory(patient_related=account)
+    response=client.delete(f'/doctor/ProviderReview/{review.id}/')
+
+    assert response.status_code==204
+    assert ProviderReview.objects.count() ==0      
     
-#     assert response.data["organizationID"] == 'cxfdrteyur'
+@pytest.mark.django_db
+def test_review_delete_not_admin_or_patient():
+    account=AccountFactory()
+    user=account.user
+    token=generate_access_token(user)
     
-#     assert ProviderReview.objects.count() == 1
-#     review = ProviderReview.objects.first()
-#     assert review.provider_related.id == provider.id
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    account_patient=AccountFactory()
+    review=ProviderReviewFactory(patient_related=account_patient)
+    response=client.delete(f'/doctor/ProviderReview/{review.id}/')
+
+    assert response.status_code == 401
+    assert ProviderReview.objects.count() == 1 
     
-# @pytest.mark.django_db
-# def test_review_create_without_admin():
-#     client=APIClient()
     
-#     account_not_admin=AccountFactory()
-#     user=account_not_admin.user
-#     token=generate_access_token(user)
+    
+##### UPDATE ####
+@pytest.mark.django_db
+def test_review_update_with_admin():
+    account_admin=AccountFactory(role=Role.ADMIN)
+    user=account_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    
+    review=ProviderReviewFactory()
+
+    response=client.patch(f'/doctor/ProviderReview/{review.id}/',{'rating':2})
+
+    assert response.status_code==200
+    review.refresh_from_db()
+    assert ProviderReview.objects.count() ==1
+    assert response.data['rating'] == 2
+
+@pytest.mark.django_db
+def test_review_update_with_patient():
+    account_patient=AccountFactory(role=Role.PATIENT)
+    user=account_patient.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    
+    review=ProviderReviewFactory(patient_related=account_patient)
+
+    response=client.patch(f'/doctor/ProviderReview/{review.id}/',{'rating':2})
+
+    assert response.status_code==200
+    review.refresh_from_db()
+    assert ProviderReview.objects.count() ==1
+    assert response.data['rating'] == 2
+        
+@pytest.mark.django_db
+def test_review_update_without_admin_or_patient():
+    account_not_admin=AccountFactory()
+    
+    user=account_not_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    
+    account_patient=AccountFactory(role=Role.PATIENT)
+    review=ProviderReviewFactory(patient_related=account_patient)
+
+    response=client.patch(f'/doctor/ProviderReview/{review.id}/',{'rating':2})
+
+    assert response.status_code==401
+
+##### CREATE ####
+
+@pytest.mark.django_db
+def test_review_create_with_jwt_patient():
+    client=APIClient()
+    
+    account_patient=AccountFactory(role=Role.PATIENT)
+    user=account_patient.user
+    token=generate_access_token(user)
  
-#     client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
-#     account=AccountFactory()
-#     provider=ProviderFactory()
-#     data={
-#         "patient_related":account.id,
-#         "provider_related":provider.id,
-#         "rating":3,
-#         "comment":"not bad"
-#     }
-#     response=client.post('/doctor/ProviderReview/',data)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+   
+    provider=ProviderFactory()
+    data={
+        "provider_related":provider.id,
+        "rating":3,
+        "comment":"not bad"
+    }
+    response=client.post('/doctor/ProviderReview/',data)
     
-#     assert response.status_code ==401
-#     assert ProviderReview.objects.count() == 0
+    assert response.status_code ==201
+    
+    assert ProviderReview.objects.count() == 1
+    review = ProviderReview.objects.first()
+    assert review.patient_related.id == account_patient.id
+    
+    
+@pytest.mark.django_db
+def test_review_create_with_jwt_admin():
+    client=APIClient()
+    
+    account_admin=AccountFactory(role=Role.ADMIN)
+    user=account_admin.user
+    token=generate_access_token(user)
+ 
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+    account=AccountFactory()
+    provider=ProviderFactory()
+    data={
+        "patient_related":account.id,
+        "provider_related":provider.id,
+        "rating":3,
+        "comment":"not bad"
+    }
+    response=client.post('/doctor/ProviderReview/',data)
+    
+    assert response.status_code ==201
+
+    assert ProviderReview.objects.count() == 1
+    review = ProviderReview.objects.first()
+    assert review.provider_related.id == provider.id
+    
+@pytest.mark.django_db
+def test_review_create_without_admin_or_patient():
+    client=APIClient()
+    
+    account_doctor=AccountFactory(role=Role.DOCTOR)
+    user=account_doctor.user
+    token=generate_access_token(user)
+ 
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+
+    provider=ProviderFactory()
+    data={
+        "provider_related":provider.id,
+        "rating":3,
+        "comment":"not bad"
+    }
+    response=client.post('/doctor/ProviderReview/',data)
+    
+    assert response.status_code ==401
+    assert ProviderReview.objects.count() == 0

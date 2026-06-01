@@ -81,7 +81,7 @@ class ProviderApplication(models.Model):
         return f"{self.account_related.lastname} - {self.role_requested}"
       
 class ProviderReview(models.Model):
-    patient_related=models.ForeignKey(Account,on_delete=models.CASCADE, related_name="patient_review")
+    patient_related=models.ForeignKey(Account,on_delete=models.CASCADE, related_name="patient_review", blank=True)
     provider_related=models.ForeignKey(Provider,on_delete=models.CASCADE, related_name="provider_review")
     rating =models.SmallIntegerField(default=1)
     comment= models.TextField()

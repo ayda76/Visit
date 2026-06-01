@@ -11,11 +11,13 @@ from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
+
 from account_app.api.serializers import AccountSerializer
 from account_app.models import (Role,
                                 Status,
                                 Account
                                )
+from doctor_app.permissions import Admin_Permissions,Provider_Review_Permissions
 from book_app.models import Appointment
 from doctor_app.tasks import send_acceptance_email
 from doctor_app.api.filters import ProviderFilter
@@ -37,13 +39,14 @@ from doctor_app.models import (StatusApplication,
                                 ProviderApplication,
                                 ProviderReview)
 
-
+from doctor_app.api.services import add_patient
 
 
 
 class CenterViewSet(viewsets.ModelViewSet):
-    queryset = Center.objects.select_related('manager').prefetch_related('providers_recommended')
+    queryset = Center.objects.select_related('manager')
     serializer_class = CenterSerializer
+    permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
 
@@ -52,25 +55,28 @@ class CenterViewSet(viewsets.ModelViewSet):
 class ExpertizeViewSet(viewsets.ModelViewSet):
     queryset = Expertize.objects.all()
     serializer_class = ExpertizeSerializer
+    permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
     
 class SubExpertizeViewSet(viewsets.ModelViewSet):
     queryset = SubExpertize.objects.select_related('expertize_related')
     serializer_class =SubExpertizeSerializer
+    permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
     
 class DoctorViewSet(viewsets.ModelViewSet):
-    queryset =  Doctor.objects.select_related('account_related','expertize_related').prefetch_related('providers_recommended','subExpertize_relateds')
+    queryset =  Doctor.objects.select_related('provider_related','expertize_related').prefetch_related('providers_recommended','subExpertize_relateds')
     serializer_class =  DoctorSerializer
+    permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
 
 class ProviderViewSet(viewsets.ModelViewSet):
     queryset =  Provider.objects.select_related('account_related','Center_related')
     serializer_class =  ProviderSerializer
-    
+    permission_classes=[Admin_Permissions]
     my_tags = ["Doctor"]
     
     pagination_class=PageNumberPagination
@@ -154,6 +160,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
 class ProviderApplicationViewSet(viewsets.ModelViewSet):
     queryset =  ProviderApplication.objects.all()
     serializer_class =  ProviderApplicationSerializer
+    
     pagination_class=None
     my_tags = ["Doctor"]
     
@@ -201,8 +208,11 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
 class ProviderReviewViewSet(viewsets.ModelViewSet):
     queryset =  ProviderReview.objects.all()
     serializer_class =  ProviderReviewSerializer
+    permission_classes=[Provider_Review_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]   
                 
-        
+    def perform_create(self,serializer):
+        instance=add_patient(self,serializer)
     
+

@@ -37,6 +37,3 @@ def test_retrieve_appointment():
     assert response.data['patient']==patient.id
     
     
-# test_update_appointment
-
-# test_delete_appointment

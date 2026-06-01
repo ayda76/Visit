@@ -84,7 +84,7 @@ class ProviderViewSet(viewsets.ModelViewSet):
     filterset_class=ProviderFilter
     filter_backends=[DjangoFilterBackend]
 
-    
+    #/doctor/Provider/{id}/slots/
     @action(detail=True, methods=['get'])
     def slots(self, request, pk=None):
         instance_provider=self.get_object()

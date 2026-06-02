@@ -166,6 +166,9 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def review(self,request,pk=None):
+        account_logedin= Account.get_user_jwt(self,request)
+        if account_logedin.role!= Role.ADMIN:
+            return Response({"error": "Invalid login"}, status=401)
         
         providerapplication_selected=self.get_object()
         decision=request.data.get('decision')
@@ -176,15 +179,20 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
             if decision=='approve':
                 account_related.status=Status.ACTIVE
                 providerapplication_selected.status=StatusApplication.ACCEPTED
+                providerapplication_selected.is_approved=True 
                 if account_related.role==Role.DOCTOR_PENDING:
                     provider = Provider.objects.create(account_related=account_related ,is_active=True)
                     account_related.role=Role.DOCTOR
+                    account_related.save()
 
                 elif account_related.role==Role.CENTER_PENDING:
                     center_created=Center.objects.create(manager=account_related)
                     provider = Provider.objects.create(Center_related=center_created ,is_active=True)
                     account_related.role=Role.CENTER_MANAGER
-                 
+                    account_related.save()
+                else:
+                    return Response({"error": "Invalid application"}, status=400)
+                
                 #send email to user
                 send_acceptance_email.delay(account_related.email,True)
             

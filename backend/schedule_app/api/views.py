@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 
 from schedule_app.api.services import add_provider
-from schedule_app.permissions import WorkDay_Permissions
+from schedule_app.permissions import WorkDay_Permissions,WorkHour_Permissions
 from account_app.api.serializers import *
 
 
@@ -28,5 +28,6 @@ class WorkDayViewSet(viewsets.ModelViewSet):
 class WorkHourViewSet(viewsets.ModelViewSet):
     queryset = WorkHour.objects.all()
     serializer_class = WorkHourSerializer
+    permisson_classes=[WorkHour_Permissions]
     pagination_class=None
     my_tags = ["Schedule"]

@@ -274,8 +274,7 @@ class TestProviderApplicationSerialiser:
 
         assert serializer.is_valid(), serializer.errors
         result=serializer.save()
-        account.refresh_from_db()
-        assert account.status == Status.PENDING_REVIEW
+        result.refresh_from_db()
         
         assert isinstance(result, ProviderApplication)
         assert ProviderApplication.objects.count() == 1

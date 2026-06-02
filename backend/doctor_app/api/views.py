@@ -17,7 +17,7 @@ from account_app.models import (Role,
                                 Status,
                                 Account
                                )
-from doctor_app.permissions import Admin_Permissions,Provider_Review_Permissions
+from doctor_app.permissions import Admin_Permissions,Provider_Review_Permissions,ProviderApplication_Permissions
 from book_app.models import Appointment
 from doctor_app.tasks import send_acceptance_email
 from doctor_app.api.filters import ProviderFilter
@@ -39,7 +39,7 @@ from doctor_app.models import (StatusApplication,
                                 ProviderApplication,
                                 ProviderReview)
 
-from doctor_app.api.services import add_patient
+from doctor_app.api.services import add_patient,add_account_application
 
 
 
@@ -160,10 +160,13 @@ class ProviderViewSet(viewsets.ModelViewSet):
 class ProviderApplicationViewSet(viewsets.ModelViewSet):
     queryset =  ProviderApplication.objects.all()
     serializer_class =  ProviderApplicationSerializer
-    
+    permission_classes=[ProviderApplication_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
     
+    def perform_create(self,serializer):
+        instance=add_account_application(self,serializer)
+            
     @action(detail=True, methods=['post'])
     def review(self,request,pk=None):
         account_logedin= Account.get_user_jwt(self,request)

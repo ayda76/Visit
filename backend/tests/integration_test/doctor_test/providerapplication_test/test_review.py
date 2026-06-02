@@ -6,14 +6,9 @@ from factories.factory_account import AccountFactory
 from factories.factory_doctor import ProviderApplicationFactory
 from account_app.models import Role
 from tests.utils import generate_access_token
-from doctor_app.models import Provider
+from doctor_app.models import Provider,Center,StatusApplication
 
-#  ROLE_CHOICES    = (('doctor','doctor'),('center','center'))
-# status          = models.CharField(max_length=20, choices=StatusApplication.choices, default=StatusApplication.PENDING)
-# role_requested  = models.CharField(max_length=20, choices=ROLE_CHOICES)
-# account_related = models.OneToOneField(Account,on_delete=models.CASCADE)
-# documents       = models.FileField(upload_to='provider_documents/')
-# is_approved     = models.BooleanField(default=False)
+
 @pytest.mark.django_db
 @patch("doctor_app.api.views.send_acceptance_email")
 def test_review_approve_doctorRole_by_admin(mock_send_acceptance_email):
@@ -38,17 +33,83 @@ def test_review_approve_doctorRole_by_admin(mock_send_acceptance_email):
     mock_send_acceptance_email.delay.assert_called_once_with( application.account_related.email,True)
 
 
+@pytest.mark.django_db
+@patch("doctor_app.api.views.send_acceptance_email")
+def test_review_approve_centerRole_by_admin(mock_send_acceptance_email):
+    account_admin=AccountFactory(role=Role.ADMIN)
+    user=account_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}") 
+    account_center=AccountFactory(role=Role.CENTER_PENDING)
+    application=ProviderApplicationFactory(account_related=account_center)
+    response = client.post(f"/doctor/ProviderApplication/{application.id}/review/",
+                           {"decision":"approve"},format="json")
+    
+    assert response.status_code== 200
+    assert response.data['is_approved'] == True
+    assert Center.objects.count() ==1
+    assert Provider.objects.count() ==1
+    provider=Provider.objects.first()
+    account_center.refresh_from_db()
+    assert provider.account_related.id==application.account_related.id
+    assert account_center.role == Role.CENTER_MANAGER
+    mock_send_acceptance_email.delay.assert_called_once_with( application.account_related.email,True)
 
+@pytest.mark.django_db
+@patch("doctor_app.api.views.send_acceptance_email")
+def test_review_approve_otherRole_by_admin(mock_send_acceptance_email):
+    account_admin=AccountFactory(role=Role.ADMIN)
+    user=account_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}") 
+    account_other=AccountFactory(role=Role.DOCTOR)
+    application=ProviderApplicationFactory(account_related=account_other)
+    response = client.post(f"/doctor/ProviderApplication/{application.id}/review/",
+                           {"decision":"approve"},format="json")
+    
+    assert response.status_code== 400
+    application.refresh_from_db()
+    assert application.is_approved == False
+    assert Provider.objects.count() ==0
+    mock_send_acceptance_email.delay.assert_not_called()
 
-#test_review_approve_doctorRole_by_admin
-#test_review_approve_centerRole_by_admin
-#test_review_approve_otherRole_by_admin
-#test_review_reject_by_admin
-#test_review_not_admin
+@pytest.mark.django_db
+@patch("doctor_app.api.views.send_acceptance_email")
+def test_review_rject_by_admin(mock_send_acceptance_email):
+    account_admin=AccountFactory(role=Role.ADMIN)
+    user=account_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}") 
 
-                # account_related.status=Status.ACTIVE
-                # providerapplication_selected.status=StatusApplication.ACCEPTED
-                # providerapplication_selected.is_approved=True 
-                # if account_related.role==Role.DOCTOR_PENDING:
-                #     provider = Provider.objects.create(account_related=account_related ,is_active=True)
-                #     account_related.role=Role.DOCTOR
+    application=ProviderApplicationFactory()
+    response = client.post(f"/doctor/ProviderApplication/{application.id}/review/",
+                           {"decision":"reject"},format="json")
+    
+    assert response.status_code== 200
+    application.refresh_from_db()
+    assert  application.status== StatusApplication.REJECTED
+ 
+    assert Provider.objects.count() ==0
+    mock_send_acceptance_email.delay.assert_called_once_with( application.account_related.email,False)
+
+@pytest.mark.django_db
+def test_review_not_admin():
+    account_admin=AccountFactory(role=Role.PATIENT)
+    user=account_admin.user
+    token=generate_access_token(user)
+    
+    client=APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}") 
+
+    application=ProviderApplicationFactory()
+    response = client.post(f"/doctor/ProviderApplication/{application.id}/review/",
+                           {"decision":"reject"},format="json")
+    
+    assert response.status_code== 401
+   

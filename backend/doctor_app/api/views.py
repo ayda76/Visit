@@ -187,10 +187,11 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
 
                 elif account_related.role==Role.CENTER_PENDING:
                     center_created=Center.objects.create(manager=account_related)
-                    provider = Provider.objects.create(Center_related=center_created ,is_active=True)
+                    provider = Provider.objects.create(account_related=account_related,Center_related=center_created ,is_active=True)
                     account_related.role=Role.CENTER_MANAGER
                     account_related.save()
                 else:
+                    providerapplication_selected.is_approved=False
                     return Response({"error": "Invalid application"}, status=400)
                 
                 #send email to user
@@ -199,7 +200,7 @@ class ProviderApplicationViewSet(viewsets.ModelViewSet):
             elif decision=='reject':
                 account_related.status=Status.REJECTED
                 providerapplication_selected.status=StatusApplication.REJECTED
-           
+                providerapplication_selected.is_approved=False
                 #send email to user
                 send_acceptance_email.delay(account_related.email,False)
         

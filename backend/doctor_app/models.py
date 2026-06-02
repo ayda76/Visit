@@ -70,7 +70,7 @@ class ProviderApplication(models.Model):
     ROLE_CHOICES    = (('doctor','doctor'),('center','center'))
     status          = models.CharField(max_length=20, choices=StatusApplication.choices, default=StatusApplication.PENDING)
     role_requested  = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    account_related = models.OneToOneField(Account,on_delete=models.CASCADE)
+    account_related = models.OneToOneField(Account,on_delete=models.CASCADE,blank=True)
     documents       = models.FileField(upload_to='provider_documents/')
     is_approved     = models.BooleanField(default=False)
     

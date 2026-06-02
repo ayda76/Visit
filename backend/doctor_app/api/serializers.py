@@ -69,12 +69,7 @@ class ProviderApplicationSerializer(serializers.ModelSerializer):
         model= ProviderApplication
         fields ='__all__'
         
-    def create(self,validated_data):
-        account = validated_data["account_related"]
-        application = super().create(validated_data)
-        account.status = Status.PENDING_REVIEW
-        account.save()
-        return application
+  
     
     
 class ProviderReviewSerializer(serializers.ModelSerializer):

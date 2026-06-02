@@ -27,8 +27,9 @@ def test_slots_empty_when_no_workday():
 @pytest.mark.django_db
 def test_slots_generated_from_workhours():
     provider=ProviderFactory()
+    today=date.today()
     workday=WorkDayFactory(provider_related=provider,
-                           day=WorkDay.Weekday.MONDAY,
+                           day=WorkDay.Weekday(today.weekday()),
                            duration_min=15)
     
     workhour=WorkHourFactory(workday_related=workday,
@@ -38,7 +39,7 @@ def test_slots_generated_from_workhours():
     client=APIClient()
     response=client.get(f"/doctor/Provider/{provider.id}/slots/")
     
-    today=date.today()
+
     print(f"xxx {response.data}")
     assert response.status_code == 200
     assert response.data[0]['date'] == today.isoformat()
@@ -50,9 +51,10 @@ def test_slots_generated_from_workhours():
 def test_reserved_slot_marked_true():
     today=date.today()
     provider=ProviderFactory()
+    today=date.today()
     appointment_reserved=AppointmentFactory(
         
-        weekday=Appointment.Weekday.MONDAY,
+        weekday=Appointment.Weekday(today.weekday()),
         date=today.isoformat(),
         start_time=time(9,0),
         end_time=time(9,15),
@@ -62,7 +64,7 @@ def test_reserved_slot_marked_true():
     
 
     workday=WorkDayFactory(provider_related=provider,
-                           day=WorkDay.Weekday.MONDAY,
+                           day=WorkDay.Weekday(today.weekday()),
                            duration_min=15)
     
     workhour=WorkHourFactory(workday_related=workday,
@@ -72,7 +74,7 @@ def test_reserved_slot_marked_true():
     client=APIClient()
     response=client.get(f"/doctor/Provider/{provider.id}/slots/")
     
-    today=date.today()
+ 
     print(f"xxx {response.data}")
     assert response.status_code == 200
     assert response.data[0]['date'] == today.isoformat()
@@ -85,9 +87,10 @@ def test_reserved_slot_marked_true():
 def test_canceled_appointment_not_reserved():
     today=date.today()
     provider=ProviderFactory()
+    today=date.today()
     appointment_not_reserved=AppointmentFactory(
         
-        weekday=Appointment.Weekday.MONDAY,
+        weekday=Appointment.Weekday(today.weekday()),
         date=today.isoformat(),
         start_time=time(9,0),
         end_time=time(9,15),
@@ -97,7 +100,7 @@ def test_canceled_appointment_not_reserved():
     
 
     workday=WorkDayFactory(provider_related=provider,
-                           day=WorkDay.Weekday.MONDAY,
+                           day=WorkDay.Weekday(today.weekday()),
                            duration_min=15)
     
     workhour=WorkHourFactory(workday_related=workday,
@@ -107,7 +110,7 @@ def test_canceled_appointment_not_reserved():
     client=APIClient()
     response=client.get(f"/doctor/Provider/{provider.id}/slots/")
     
-    today=date.today()
+    
     print(f"xxx {response.data}")
     assert response.status_code == 200
     assert response.data[0]['date'] == today.isoformat()

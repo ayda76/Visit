@@ -1,5 +1,7 @@
 from rest_framework.exceptions import ValidationError
-from account_app.models import Account, Role,Status
+from account_app.models import (Account,
+                                Role,
+                                Status)
 
 
 def add_patient(self,serializer):

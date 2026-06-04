@@ -1,7 +1,14 @@
 from rest_framework.routers import DefaultRouter
-from doctor_app.api.views import *
-from django.contrib import admin
 from django.urls import path , include ,re_path
+
+from doctor_app.api.views import (CenterViewSet,
+                                  ExpertizeViewSet,
+                                  SubExpertizeViewSet,
+                                  DoctorViewSet,
+                                  ProviderViewSet,
+                                  ProviderApplicationViewSet,
+                                  ProviderReviewViewSet)
+
 
 router = DefaultRouter()
 router.register("Center", CenterViewSet)

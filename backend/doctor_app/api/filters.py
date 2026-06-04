@@ -1,5 +1,6 @@
 import django_filters
-from doctor_app.models import * 
+from doctor_app.models import Provider
+                           
 
 
 

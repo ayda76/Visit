@@ -12,8 +12,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import action
 
-from account_app.api.serializers import *
-from account_app.models import *
+from account_app.api.serializers import (AccountSerializer,
+                                         RegisterSerializer,
+                                         LoginSerializer,
+                                         PasswordChangeSerializer)
+from account_app.models import Account
+
 # Helper function to generate JWT token
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)

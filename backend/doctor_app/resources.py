@@ -1,5 +1,11 @@
 from import_export import resources
-from .models import *
+from .models import (Center,
+                     Expertize,
+                     SubExpertize,
+                     Doctor,
+                     Provider,
+                     ProviderApplication,
+                     ProviderReview)
 
 
 class CenterResource(resources.ModelResource):

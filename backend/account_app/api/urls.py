@@ -1,7 +1,11 @@
 from rest_framework.routers import DefaultRouter
-from account_app.api.views import *
-from django.contrib import admin
 from django.urls import path , include ,re_path
+from account_app.api.views import (AccountViewSet,
+                                   PasswordChangeView,
+                                   RegisterView,
+                                   LoginView,
+                                   AccountMeViewSet)
+
 
 router = DefaultRouter()
 router.register("Account", AccountViewSet)

@@ -1,18 +1,15 @@
-
 from rest_framework import generics, viewsets
-
 from rest_framework.response import Response
-from rest_framework import status
+
 from rest_framework.decorators import action
-
 from datetime import datetime, timedelta, date
-from rest_framework.response import Response
+
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
 
-from account_app.api.serializers import AccountSerializer
+
 from account_app.models import (Role,
                                 Status,
                                 Account

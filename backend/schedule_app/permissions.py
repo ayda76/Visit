@@ -32,7 +32,7 @@ class WorkDay_Permissions(permissions.BasePermission):
         if account_logedin.role ==Role.ADMIN:
             return True
         else:
-            return obj.provider_related.id == account_logedin.id     
+            return obj.provider_related.account_related.id == account_logedin.id     
 
 class WorkHour_Permissions(permissions.BasePermission):
    
@@ -63,4 +63,4 @@ class WorkHour_Permissions(permissions.BasePermission):
         if account_logedin.role ==Role.ADMIN:
             return True
         else:
-            return obj.workday_related.provider_related.id == account_logedin.id     
+            return obj.workday_related.provider_related.account_related.id == account_logedin.id     

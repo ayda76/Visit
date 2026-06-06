@@ -22,6 +22,9 @@ def test_list_centers():
     assert Center.objects.count() == 4
 
 
+
+
+
 @pytest.mark.django_db
 def test_retrieve_center():
     client=APIClient()

@@ -1,7 +1,8 @@
 from rest_framework import serializers
-
-from book_app.models import *
 from django.db import transaction, IntegrityError
+
+from book_app.models import Appointment
+
 
   
 class AppointmentSerializer(serializers.ModelSerializer):

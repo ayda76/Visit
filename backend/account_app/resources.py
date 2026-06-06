@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import *
+from .models import Account
 
 
 class AccountResource(resources.ModelResource):

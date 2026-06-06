@@ -1,10 +1,9 @@
 from django.contrib import admin
-
-from .resources import *
 from import_export.admin import ImportExportModelAdmin 
-# Register your models here.
-from .models import *
 
+from .resources import AppointmentResource
+from .models import Appointment
+# Register your models here.
 
 
 @admin.register(Appointment)

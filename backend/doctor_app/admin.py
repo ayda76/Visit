@@ -1,10 +1,30 @@
 from django.contrib import admin
-
-from .resources import *
 from import_export.admin import ImportExportModelAdmin 
-# Register your models here.
-from .models import *
 
+from .resources import (CenterResource,
+                        ExpertizeResource,
+                        SubExpertizeResource,
+                        DoctorResource,
+                        ProviderResource,
+                        ProviderApplicationResource,
+                        ProviderReviewResource)
+
+
+from .models import (Center,
+                     Expertize,
+                     SubExpertize,
+                     Doctor,
+                     Provider,
+                     ProviderApplication,
+                     ProviderReview)
+
+# Register your models here.
+
+@admin.register(Center)
+class CenterAdmin(ImportExportModelAdmin):
+
+    list_display = ('id','name','phone1','phone2' )
+    resource_class = CenterResource
 
 
 @admin.register(Expertize)
@@ -25,11 +45,6 @@ class DoctorAdmin(ImportExportModelAdmin):
     list_display = ('id','degree','phone1','phone2' )
     resource_class = DoctorResource
     
-@admin.register(Center)
-class CenterAdmin(ImportExportModelAdmin):
-
-    list_display = ('id','name','phone1','phone2' )
-    resource_class = CenterResource
 
 @admin.register(Provider)
 class ProviderAdmin(ImportExportModelAdmin):

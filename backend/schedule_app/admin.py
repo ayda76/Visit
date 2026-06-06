@@ -1,12 +1,13 @@
 from django.contrib import admin
-from django.contrib import admin
-
-from .resources import *
 from import_export.admin import ImportExportModelAdmin 
+
+from .resources import (WorkDayResource,
+                        WorkHourResource)
+
+from .models import (WorkHour,
+                     WorkDay)
+
 # Register your models here.
-from .models import *
-
-
 
 @admin.register(WorkDay)
 class WorkDayAdmin(ImportExportModelAdmin):

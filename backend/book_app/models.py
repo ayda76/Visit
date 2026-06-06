@@ -1,7 +1,7 @@
 from django.db import models
 from doctor_app.models import Provider
 from django.db.models import Q
-from account_app.models import *
+from account_app.models import Account
 # Create your models here.
 
 class Appointment(models.Model):

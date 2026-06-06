@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter
-from book_app.api.views import *
-from django.contrib import admin
 from django.urls import path , include ,re_path
+from book_app.api.views import AppointmentViewSet
+
 
 router = DefaultRouter()
 router.register("Appointment", AppointmentViewSet)

@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import *
+from .models import Appointment
 
 
 class AppointmentResource(resources.ModelResource):

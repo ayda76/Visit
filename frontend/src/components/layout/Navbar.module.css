@@ -1,0 +1,193 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245, 240, 232, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.header.scrolled {
+  border-color: var(--cream-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.logo svg { color: var(--teal); }
+
+.nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.link {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: color var(--transition), background var(--transition);
+}
+
+.link:hover { color: var(--navy); background: var(--cream-dark); }
+.link.active { color: var(--teal-dark); background: rgba(30,184,160,.1); }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.loginBtn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--navy);
+  border: 1.5px solid var(--cream-dark);
+  background: transparent;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.loginBtn:hover { border-color: var(--teal); background: rgba(30,184,160,.06); }
+
+.registerBtn {
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  background: var(--navy);
+  transition: background var(--transition), transform var(--transition);
+}
+
+.registerBtn:hover { background: var(--navy-mid); transform: translateY(-1px); }
+
+/* User menu */
+.userMenu { position: relative; }
+
+.userBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 6px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1.5px solid var(--cream-dark);
+  transition: border-color var(--transition), background var(--transition);
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.userBtn:hover { border-color: var(--teal); background: rgba(30,184,160,.06); }
+
+.avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.userName { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.chevronUp { transform: rotate(180deg); transition: transform var(--transition); }
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  animation: fadeUp .15s ease both;
+}
+
+.dropItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--gray-800);
+  background: transparent;
+  transition: background var(--transition), color var(--transition);
+  border: none;
+  text-align: left;
+}
+
+.dropItem:hover { background: var(--gray-50); color: var(--navy); }
+.dropItem.danger:hover { background: rgba(232,93,74,.08); color: var(--coral); }
+
+.divider { border: none; border-top: 1px solid var(--gray-200); margin: 4px 0; }
+
+/* Burger */
+.burger {
+  display: none;
+  background: transparent;
+  color: var(--navy);
+  padding: 4px;
+  margin-left: auto;
+}
+
+/* Mobile menu */
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 16px;
+  border-top: 1px solid var(--cream-dark);
+  background: var(--cream);
+  animation: fadeUp .15s ease both;
+}
+
+.mobileLink {
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--navy);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  text-align: left;
+  transition: background var(--transition);
+}
+
+.mobileLink:hover { background: var(--cream-dark); }
+.mobileLink.danger { color: var(--coral); }
+
+@media (max-width: 768px) {
+  .nav, .actions { display: none; }
+  .burger { display: flex; }
+}

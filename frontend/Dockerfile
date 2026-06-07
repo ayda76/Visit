@@ -1,27 +1,24 @@
-# -----------------------------
-# FRONTEND Dockerfile (Dev mode)
-# -----------------------------
-FROM node:22-alpine3.19
+# ── Stage 1: Build ──────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependency files first (better cache)
-COPY package*.json ./
+COPY package.json package-lock.json* ./
+RUN npm install --frozen-lockfile 2>/dev/null || npm install
 
-RUN npm config set registry https://registry.npmmirror.com
-
-RUN npm cache clean --force
-
-# Install dependencies
-RUN npm install
-
-# Copy rest of the project
 COPY . .
 
-# Expose Next.js default port
-EXPOSE 3000
+ARG VITE_API_URL=http://localhost:8000
+ENV VITE_API_URL=$VITE_API_URL
 
-# Run Next.js in dev mode
-CMD ["npm", "run", "dev"]
+RUN npm run build
 
+# ── Stage 2: Serve with Nginx ────────────────────────────────────────────────
+FROM nginx:alpine AS runner
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

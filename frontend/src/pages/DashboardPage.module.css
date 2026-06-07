@@ -1,0 +1,99 @@
+.page { padding: 40px 24px; min-height: 80vh; }
+
+.inner { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+
+.header h1 { font-size: 28px; color: var(--navy); }
+.header p  { font-size: 15px; color: var(--gray-400); margin-top: 4px; }
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.statCard {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.statCard:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.statIcon {
+  width: 44px; height: 44px;
+  background: rgba(30,184,160,.1);
+  color: var(--teal);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.statValue { font-size: 26px; font-weight: 700; font-family: var(--font-display); color: var(--navy); }
+.statLabel { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+
+.section { display: flex; flex-direction: column; gap: 16px; }
+
+.sectionHead {
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.sectionHead h2, .section > h2 { font-size: 20px; color: var(--navy); }
+
+.apptList {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.apptRow {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  transition: border-color var(--transition);
+}
+
+.apptRow:hover { border-color: var(--teal-light); }
+
+.apptDate {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 52px;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  text-align: center;
+}
+
+.apptDate strong { font-size: 15px; font-family: var(--font-display); color: var(--navy); }
+.apptDate span   { font-size: 11px; color: var(--gray-400); }
+
+.apptInfo { flex: 1; }
+.apptInfo p { font-size: 15px; font-weight: 500; color: var(--navy); }
+.apptInfo span { font-size: 13px; color: var(--gray-400); }
+
+.apptStatus {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px; font-weight: 600;
+  text-transform: capitalize;
+}
+
+.empty {
+  background: var(--white);
+  border: 1px dashed var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 40px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+
+.empty p { color: var(--gray-400); font-size: 15px; }

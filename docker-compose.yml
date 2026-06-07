@@ -81,6 +81,18 @@ services:
       - visit_db
       - visit_redis
       # - prometheus
+
+  visit_frontend:
+    container_name: visit_frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://visit_backend:8000
+    ports:
+      - "3000:80"
+    depends_on:
+      - visit_backend
+
   visit_rabbitmq:
     image: rabbitmq:3-management
     container_name: visit_rabbitmq

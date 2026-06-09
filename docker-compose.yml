@@ -86,10 +86,15 @@ services:
     container_name: visit_frontend
     build:
       context: ./frontend
-      args:
-        VITE_API_URL: http://visit_backend:8000
+    command: npm run dev -- --host 0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "3000:80"
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - VITE_API_URL=http://localhost:8000
     depends_on:
       - visit_backend
 

@@ -91,8 +91,8 @@ export function RegisterPage() {
     setLoading(true);
     try {
       await register(form);
-      toast.success('Account created! Please sign in.');
-      navigate('/login');
+      toast.success('Account created! Welcome to Visit.');
+      navigate('/dashboard');
     } catch (err) {
       const data = err?.response?.data;
       const msg = typeof data === 'object'

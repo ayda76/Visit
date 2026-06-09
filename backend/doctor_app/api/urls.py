@@ -30,3 +30,13 @@ urlpatterns = [
     # path('ME/', AccountMeViewSet.as_view(), name='me'),
 
 ]
+
+#/doctor/Center/
+#/doctor/Expertize/
+#/doctor/SubExpertize/
+#/doctor/Doctor/
+#/doctor/Provider/
+#/doctor/ProviderApplication/
+#/doctor/ProviderReview/
+#/doctor/Provider/{id}/slots/
+#/doctor/ProviderApplication/{id}/review/

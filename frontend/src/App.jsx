@@ -1,60 +1,43 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Layout from './components/layout/Layout';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DoctorsPage from './pages/DoctorsPage';
-import DoctorDetailPage from './pages/DoctorDetailPage';
-import CentersPage from './pages/CentersPage';
-import CenterDetailPage from './pages/CenterDetailPage';
-import BookingPage from './pages/BookingPage';
-import DashboardPage from './pages/DashboardPage';
-import AppointmentsPage from './pages/AppointmentsPage';
-import ProfilePage from './pages/ProfilePage';
-import NotFoundPage from './pages/NotFoundPage';
-import LoadingSpinner from './components/common/LoadingSpinner';
+import Spinner from './components/common/Spinner';
 
-function PrivateRoute({ children }) {
+import HomePage        from './pages/HomePage';
+import LoginPage       from './pages/LoginPage';
+import RegisterPage    from './pages/RegisterPage';
+import ProvidersPage   from './pages/ProvidersPage';
+import ProviderPage    from './pages/ProviderPage';
+import BookPage        from './pages/BookPage';
+import MyAppointments  from './pages/MyAppointments';
+import ProfilePage     from './pages/ProfilePage';
+import NotFound        from './pages/NotFound';
+
+function Private({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <LoadingSpinner fullPage />;
+  if (loading) return <Spinner full />;
   return user ? children : <Navigate to="/login" replace />;
 }
 
-function GuestRoute({ children }) {
+function Guest({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <LoadingSpinner fullPage />;
-  return !user ? children : <Navigate to="/dashboard" replace />;
+  if (loading) return <Spinner full />;
+  return !user ? children : <Navigate to="/" replace />;
 }
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="doctors" element={<DoctorsPage />} />
-        <Route path="doctors/:id" element={<DoctorDetailPage />} />
-        <Route path="centers" element={<CentersPage />} />
-        <Route path="centers/:id" element={<CenterDetailPage />} />
-        <Route path="book/:doctorId" element={
-          <PrivateRoute><BookingPage /></PrivateRoute>
-        } />
-        <Route path="dashboard" element={
-          <PrivateRoute><DashboardPage /></PrivateRoute>
-        } />
-        <Route path="appointments" element={
-          <PrivateRoute><AppointmentsPage /></PrivateRoute>
-        } />
-        <Route path="profile" element={
-          <PrivateRoute><ProfilePage /></PrivateRoute>
-        } />
-        <Route path="login" element={
-          <GuestRoute><LoginPage /></GuestRoute>
-        } />
-        <Route path="register" element={
-          <GuestRoute><RegisterPage /></GuestRoute>
-        } />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route index              element={<HomePage />} />
+        <Route path="providers"   element={<ProvidersPage />} />
+        <Route path="providers/:id" element={<ProviderPage />} />
+        <Route path="book/:providerId" element={<Private><BookPage /></Private>} />
+        <Route path="appointments" element={<Private><MyAppointments /></Private>} />
+        <Route path="profile"      element={<Private><ProfilePage /></Private>} />
+        <Route path="login"        element={<Guest><LoginPage /></Guest>} />
+        <Route path="register"     element={<Guest><RegisterPage /></Guest>} />
+        <Route path="*"            element={<NotFound />} />
       </Route>
     </Routes>
   );

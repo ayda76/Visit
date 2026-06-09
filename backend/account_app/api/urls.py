@@ -19,3 +19,9 @@ urlpatterns = [
     path('ME/', AccountMeViewSet.as_view(), name='me'),
 
 ]
+
+#/account/Account/
+#/account/change/password/
+#/account/SignUp/
+#/account/Login/
+#/account/ME/

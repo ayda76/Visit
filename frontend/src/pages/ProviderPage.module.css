@@ -1,0 +1,133 @@
+.page {}
+.hero { background: var(--ink); padding: 48px 24px; }
+.heroInner { max-width: 1160px; margin: 0 auto; display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+
+.avatar {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-pale), var(--teal));
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 700; font-family: var(--font-display); flex-shrink: 0;
+  border: 3px solid rgba(255,255,255,.15);
+}
+.heroInfo { flex: 1; }
+.heroInfo h1 { font-size: 30px; color: var(--white); }
+.spec { color: var(--teal); font-size: 15px; font-weight: 500; margin-top: 4px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1); border-radius: 99px;
+  font-size: 12px; color: rgba(255,255,255,.75);
+}
+.verified { background: rgba(11,191,163,.15); border-color: rgba(11,191,163,.3); color: var(--teal); }
+.ratingRow { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+.rNum { font-size: 16px; font-weight: 700; color: var(--white); }
+.rCount { font-size: 13px; color: var(--steel); }
+
+.body { max-width: 1160px; margin: 0 auto; padding: 40px 24px; display: flex; gap: 32px; align-items: flex-start; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 36px; }
+.sec {}
+.secHead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.sec h2 { font-size: 20px; color: var(--ink); margin-bottom: 14px; }
+.sec p  { font-size: 15px; color: var(--slate); line-height: 1.7; }
+
+/* Calendar */
+.calNav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; font-size: 14px; font-weight: 500; color: var(--slate);
+}
+.calBtn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--fog); display: flex; align-items: center; justify-content: center;
+  color: var(--slate); transition: border-color var(--t), color var(--t);
+}
+.calBtn:hover { border-color: var(--teal); color: var(--teal); }
+
+.calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.calDay {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 4px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--fog); background: var(--white);
+  cursor: pointer; gap: 4px; position: relative;
+  transition: border-color var(--t), background var(--t), color var(--t);
+  font-family: var(--font-body);
+}
+.calDay:hover:not(:disabled) { border-color: var(--teal); background: var(--teal-pale); }
+.calHasSlots { border-color: var(--teal-pale); }
+.calSelected { border-color: var(--teal) !important; background: var(--teal) !important; color: white !important; }
+.calPast { opacity: .35; cursor: not-allowed; }
+
+.dayName { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--steel); }
+.calSelected .dayName { color: rgba(255,255,255,.75); }
+.dayNum { font-size: 18px; font-weight: 700; font-family: var(--font-display); }
+.dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+}
+.calSelected .dot { background: white; }
+
+.daySlots { margin-top: 16px; background: var(--fog); border-radius: var(--r-md); padding: 18px; }
+.daySlots h4 { font-size: 15px; font-family: var(--font-body); font-weight: 600; margin-bottom: 12px; }
+.noSlots { font-size: 14px; color: var(--steel); text-align: center; padding: 16px 0; }
+.slotsGrid { display: flex; flex-wrap: wrap; gap: 8px; }
+.slot {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 12px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 500;
+  border: 1.5px solid;
+}
+.slotFree  { background: var(--teal-pale); border-color: var(--teal); color: var(--teal-dark); }
+.slotBooked{ background: var(--fog); border-color: var(--mist); color: var(--steel); }
+.freeLabel  { margin-left: 4px; font-size: 11px; background: var(--teal); color: white; padding: 1px 6px; border-radius: 99px; }
+.bookedLabel{ margin-left: 4px; font-size: 11px; background: var(--mist); color: var(--slate); padding: 1px 6px; border-radius: 99px; }
+
+/* Reviews */
+.reviewForm {
+  background: var(--fog); border-radius: var(--r-md); padding: 20px;
+  display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;
+}
+.reviewForm h4 { font-size: 15px; font-family: var(--font-body); font-weight: 600; }
+.ratingPicker { display: flex; gap: 4px; }
+.ratingPicker button { background: none; border: none; cursor: pointer; padding: 2px; transition: transform var(--t); }
+.ratingPicker button:hover { transform: scale(1.15); }
+.textarea {
+  width: 100%; border: 1.5px solid var(--fog); border-radius: var(--r-sm);
+  padding: 10px 12px; resize: vertical; font-size: 14px;
+  color: var(--ink); background: var(--white);
+  transition: border-color var(--t); font-family: var(--font-body);
+}
+.textarea:focus { border-color: var(--teal); outline: none; }
+
+.noReviews { font-size: 14px; color: var(--steel); }
+.reviewList { display: flex; flex-direction: column; gap: 14px; }
+.review {
+  background: var(--white); border: 1px solid var(--fog);
+  border-radius: var(--r-md); padding: 16px;
+}
+.reviewTop { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.rAvatar {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--fog);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--slate); flex-shrink: 0;
+}
+.rName { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.rDate { font-size: 12px; color: var(--steel); margin-left: auto; white-space: nowrap; }
+.rText { font-size: 14px; color: var(--slate); line-height: 1.6; }
+
+/* Sidebar */
+.sidebar { width: 250px; flex-shrink: 0; position: sticky; top: 80px; }
+.infoCard {
+  background: var(--white); border: 1px solid var(--fog);
+  border-radius: var(--r-lg); padding: 20px;
+}
+.infoCard h3 { font-size: 14px; font-family: var(--font-body); font-weight: 600; margin-bottom: 14px; }
+.iRow {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--fog); font-size: 14px;
+}
+.iRow span { color: var(--steel); }
+.iRow strong { color: var(--ink); text-align: right; max-width: 130px; }
+
+@media (max-width: 768px) {
+  .body { flex-direction: column; }
+  .sidebar { width: 100%; position: static; }
+}

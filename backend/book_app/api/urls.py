@@ -14,3 +14,4 @@ urlpatterns = [
     # path('ME/', AccountMeViewSet.as_view(), name='me'),
 
 ]
+#book/Appointment/

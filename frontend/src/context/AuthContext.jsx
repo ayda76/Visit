@@ -4,12 +4,12 @@ import { authAPI } from '../api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser]     = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = useCallback(async () => {
+  const fetchMe = useCallback(async () => {
     try {
-      const { data } = await authAPI.profile();
+      const { data } = await authAPI.me();
       setUser(data);
     } catch {
       setUser(null);
@@ -21,19 +21,21 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem('access_token')) {
-      fetchProfile();
-    } else {
-      setLoading(false);
-    }
-  }, [fetchProfile]);
+    localStorage.getItem('access_token') ? fetchMe() : setLoading(false);
+  }, [fetchMe]);
 
   const login = async (credentials) => {
     const { data } = await authAPI.login(credentials);
     localStorage.setItem('access_token', data.access);
     localStorage.setItem('refresh_token', data.refresh);
-    await fetchProfile();
-    return data;
+    await fetchMe();
+  };
+
+  const register = async (formData) => {
+    const { data } = await authAPI.register(formData);
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
+    await fetchMe();
   };
 
   const logout = () => {
@@ -42,13 +44,8 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const register = async (formData) => {
-    const { data } = await authAPI.register(formData);
-    return data;
-  };
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, fetchProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, fetchMe }}>
       {children}
     </AuthContext.Provider>
   );

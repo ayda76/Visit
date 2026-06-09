@@ -49,7 +49,7 @@ class DoctorAdmin(ImportExportModelAdmin):
 @admin.register(Provider)
 class ProviderAdmin(ImportExportModelAdmin):
 
-    list_display = ('id' ,)
+    list_display = ('id' ,'name')
     resource_class = ProviderResource
 
 @admin.register(ProviderApplication)

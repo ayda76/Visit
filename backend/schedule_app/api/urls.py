@@ -14,3 +14,5 @@ urlpatterns = [
     # path('ME/', AccountMeViewSet.as_view(), name='me'),
 
 ]
+#schedule/WorkDay/
+#schedule/WorkHour/

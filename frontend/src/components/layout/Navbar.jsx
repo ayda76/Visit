@@ -1,110 +1,90 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import NotificationBell from '../common/NotificationBell';
-import styles from './Navbar.module.css';
-import { Menu, X, Stethoscope, ChevronDown, LogOut, User, Calendar } from 'lucide-react';
+import { Stethoscope, Menu, X, ChevronDown, LogOut, User, Calendar } from 'lucide-react';
+import s from './Navbar.module.css';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const h = () => setScrolled(window.scrollY > 24);
+    window.addEventListener('scroll', h);
+    return () => window.removeEventListener('scroll', h);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-    setDropOpen(false);
-  };
+  const handleLogout = () => { logout(); navigate('/'); setDropOpen(false); };
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
-      <div className={styles.inner}>
-        {/* Logo */}
-        <Link to="/" className={styles.logo}>
-          <Stethoscope size={22} strokeWidth={1.8} />
-          <span>Visit</span>
+    <header className={`${s.bar} ${scrolled ? s.scrolled : ''}`}>
+      <div className={s.inner}>
+        <Link to="/" className={s.logo}>
+          <Stethoscope size={20} strokeWidth={1.8} />
+          Visit
         </Link>
 
-        {/* Desktop nav */}
-        <nav className={styles.nav}>
-          <NavLink to="/doctors" className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}>
-            Doctors
-          </NavLink>
-          <NavLink to="/centers" className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}>
-            Medical Centers
+        <nav className={s.nav}>
+          <NavLink to="/providers" className={({ isActive }) => `${s.link} ${isActive ? s.active : ''}`}>
+            Doctors & Centers
           </NavLink>
         </nav>
 
-        {/* Auth actions */}
-        <div className={styles.actions}>
+        <div className={s.right}>
           {user ? (
-            <>
-              <NotificationBell />
-              <div className={styles.userMenu}>
-                <button className={styles.userBtn} onClick={() => setDropOpen(v => !v)}>
-                  <div className={styles.avatar}>
-                    {user.first_name?.[0] || user.username?.[0] || 'U'}
-                  </div>
-                  <span className={styles.userName}>{user.first_name || user.username}</span>
-                  <ChevronDown size={14} className={dropOpen ? styles.chevronUp : ''} />
-                </button>
-                {dropOpen && (
-                  <div className={styles.dropdown}>
-                    <Link to="/dashboard" className={styles.dropItem} onClick={() => setDropOpen(false)}>
-                      <Calendar size={15} /> Dashboard
+            <div className={s.userWrap}>
+              <button className={s.userBtn} onClick={() => setDropOpen(v => !v)}>
+                <span className={s.avatar}>{(user.first_name || user.username || 'U')[0].toUpperCase()}</span>
+                <span className={s.userName}>{user.first_name || user.username}</span>
+                <ChevronDown size={13} className={dropOpen ? s.rotated : ''} />
+              </button>
+              {dropOpen && (
+                <>
+                  <div className={s.backdrop} onClick={() => setDropOpen(false)} />
+                  <div className={s.drop}>
+                    <Link to="/appointments" className={s.dropItem} onClick={() => setDropOpen(false)}>
+                      <Calendar size={14} /> My Appointments
                     </Link>
-                    <Link to="/appointments" className={styles.dropItem} onClick={() => setDropOpen(false)}>
-                      <Calendar size={15} /> My Appointments
+                    <Link to="/profile" className={s.dropItem} onClick={() => setDropOpen(false)}>
+                      <User size={14} /> Profile
                     </Link>
-                    <Link to="/profile" className={styles.dropItem} onClick={() => setDropOpen(false)}>
-                      <User size={15} /> Profile
-                    </Link>
-                    <hr className={styles.divider} />
-                    <button className={`${styles.dropItem} ${styles.danger}`} onClick={handleLogout}>
-                      <LogOut size={15} /> Sign Out
+                    <hr className={s.hr} />
+                    <button className={`${s.dropItem} ${s.danger}`} onClick={handleLogout}>
+                      <LogOut size={14} /> Sign Out
                     </button>
                   </div>
-                )}
-              </div>
-            </>
+                </>
+              )}
+            </div>
           ) : (
             <>
-              <Link to="/login" className={styles.loginBtn}>Sign In</Link>
-              <Link to="/register" className={styles.registerBtn}>Get Started</Link>
+              <Link to="/login" className={s.loginBtn}>Sign In</Link>
+              <Link to="/register" className={s.regBtn}>Get Started</Link>
             </>
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button className={styles.burger} onClick={() => setMenuOpen(v => !v)} aria-label="Menu">
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        <button className={s.burger} onClick={() => setMobileOpen(v => !v)}>
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className={styles.mobileMenu}>
-          <NavLink to="/doctors" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Doctors</NavLink>
-          <NavLink to="/centers" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Medical Centers</NavLink>
+      {mobileOpen && (
+        <div className={s.mobile}>
+          <NavLink to="/providers" onClick={() => setMobileOpen(false)} className={s.mLink}>Doctors & Centers</NavLink>
           {user ? (
             <>
-              <NavLink to="/dashboard" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Dashboard</NavLink>
-              <NavLink to="/appointments" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Appointments</NavLink>
-              <NavLink to="/profile" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Profile</NavLink>
-              <button className={`${styles.mobileLink} ${styles.danger}`} onClick={handleLogout}>Sign Out</button>
+              <NavLink to="/appointments" onClick={() => setMobileOpen(false)} className={s.mLink}>My Appointments</NavLink>
+              <NavLink to="/profile" onClick={() => setMobileOpen(false)} className={s.mLink}>Profile</NavLink>
+              <button className={`${s.mLink} ${s.danger}`} onClick={handleLogout}>Sign Out</button>
             </>
           ) : (
             <>
-              <NavLink to="/login" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Sign In</NavLink>
-              <NavLink to="/register" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>Register</NavLink>
+              <NavLink to="/login" onClick={() => setMobileOpen(false)} className={s.mLink}>Sign In</NavLink>
+              <NavLink to="/register" onClick={() => setMobileOpen(false)} className={s.mLink}>Register</NavLink>
             </>
           )}
         </div>

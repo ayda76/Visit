@@ -10,14 +10,14 @@ class Admin_Permissions(permissions.BasePermission):
     def has_permission(self, request,view):
       
         if  request.method=='POST':
-            return self.can_create_appointment(request)
+            return self.can_create_subj(request)
         
         return True
         
-    def can_create_appointment(self, request):
+    def can_create_subj(self, request):
         account_logedin= Account.get_user_jwt(self,request)
-        if account_logedin.role == Role.ADMIN:
-            return True
+        if account_logedin:
+            return account_logedin.role == Role.ADMIN
         else: 
             return False
         
@@ -28,8 +28,10 @@ class Admin_Permissions(permissions.BasePermission):
             return True
 
         account_logedin = Account.get_user_jwt(self, request)
-
-        return account_logedin.role == Role.ADMIN
+        if account_logedin:
+            return account_logedin.role == Role.ADMIN
+        else:
+            return False
 
 
 class ProviderApplication_Permissions(permissions.BasePermission):

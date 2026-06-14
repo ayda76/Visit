@@ -126,3 +126,7 @@ def test_admin_permission_delete_not_admin(mock_get_user_jwt):
     result=permission.has_object_permission(request,None,obj)
     
     assert result==False
+
+
+
+# 

@@ -35,7 +35,8 @@ class Admin_Permissions(permissions.BasePermission):
 
 
 class ProviderApplication_Permissions(permissions.BasePermission):
-   
+
+        
     def has_permission(self, request,view):
       
         if  request.method=='POST':
@@ -53,22 +54,21 @@ class ProviderApplication_Permissions(permissions.BasePermission):
             return False
         
     def can_get_applications(self, request):
-        account_logedin= Account.get_user_jwt(self,request)
-        if account_logedin:
-            return account_logedin.role == Role.ADMIN
-        else: 
-            return False        
+        account_logedin = Account.get_user_jwt(self, request)
+        return account_logedin is not None    
         
     def has_object_permission(self, request, view, obj):
           
         account_logedin = Account.get_user_jwt(self, request)
-        if  account_logedin:
-            if  account_logedin.role==Role.ADMIN:
-                return True
-            else:
-                return account_logedin == obj.account_related
-        else:
+
+        if not account_logedin:
             return False
+
+        if account_logedin.role == Role.ADMIN:
+            return True
+
+        return account_logedin == obj.account_related         
+    
 
 
 class Provider_Review_Permissions(permissions.BasePermission):

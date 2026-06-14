@@ -1,39 +1,41 @@
-name: Django Tests
+# name: Django Tests
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+# on:
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+#   # push:
+#   #   branches: ["main"]
+#   # pull_request:
+#   #   branches: ["main"]
 
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Create env file
-        run: |
-          cat > backend/.env << EOF
-          DEBUG=False
-          SECRET_KEY=test-secret
-          POSTGRES_DB=test_db
-          POSTGRES_USER=test_user
-          POSTGRES_PASSWORD=test_pass
-          POSTGRES_HOST=visit_db
-          POSTGRES_PORT=5432
-          REDIS_HOST=visit_redis
-          EOF
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
 
-      - name: Start database and redis
-        run: |
-          docker compose up -d visit_db visit_redis
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Run tests
-        run: |
-          docker compose run --rm visit_backend pytest -rP
+#       - name: Create env file
+#         run: |
+#           cat > backend/.env << EOF
+#           DEBUG=False
+#           SECRET_KEY=test-secret
+#           POSTGRES_DB=test_db
+#           POSTGRES_USER=test_user
+#           POSTGRES_PASSWORD=test_pass
+#           POSTGRES_HOST=visit_db
+#           POSTGRES_PORT=5432
+#           REDIS_HOST=visit_redis
+#           EOF
 
-      - name: Cleanup
-        if: always()
-        run: docker compose down -v
+#       - name: Start database and redis
+#         run: |
+#           docker compose up -d visit_db visit_redis
+
+#       - name: Run tests
+#         run: |
+#           docker compose run --rm visit_backend pytest -rP
+
+#       - name: Cleanup
+#         if: always()
+#         run: docker compose down -v

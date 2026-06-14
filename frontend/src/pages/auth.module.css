@@ -1,0 +1,23 @@
+.page{min-height:85vh;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:linear-gradient(135deg,var(--ink) 0%,var(--ink-mid) 100%)}
+.card{background:var(--white);border-radius:var(--r-xl);padding:40px;width:100%;max-width:460px;box-shadow:var(--sh-lg);animation:fadeUp .35s ease both}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--font-d);font-size:20px;font-weight:600;color:var(--ink);margin-bottom:22px}
+.logo svg{color:var(--teal)}
+.card h1{font-size:24px;color:var(--ink)}
+.sub{font-size:14px;color:var(--steel);margin-top:6px;margin-bottom:26px;line-height:1.5}
+.form{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:12px}
+.row>*{flex:1}
+.pwWrap{position:relative}
+.pwWrap input{padding-right:44px}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mist);cursor:pointer;display:flex;align-items:center}
+.switch{text-align:center;font-size:14px;color:var(--steel);margin-top:18px}
+.switch a{color:var(--teal-dk);font-weight:500}
+.switch a:hover{text-decoration:underline}
+.roleGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.roleCard{padding:14px 10px;border:2px solid var(--fog);border-radius:var(--r-md);cursor:pointer;text-align:center;transition:border-color var(--t),background var(--t);background:var(--white)}
+.roleCard:hover{border-color:var(--teal);background:var(--teal-pale)}
+.roleCard.sel{border-color:var(--teal);background:var(--teal-pale)}
+.roleCard .icon{font-size:26px;margin-bottom:6px}
+.roleCard p{font-size:13px;font-weight:600;color:var(--ink)}
+.roleCard span{font-size:11px;color:var(--steel)}
+@media(max-width:400px){.row{flex-direction:column}}

@@ -12,6 +12,12 @@ from factories.factory_doctor import ProviderApplicationFactory
 @pytest.mark.django_db
 def test_list_applications():
     client=APIClient()
+    account=AccountFactory(role=Role.ADMIN)
+    user=account.user
+    token=generate_access_token(user)
+    
+
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
     ProviderApplicationFactory.create_batch(4)
     
     response=client.get('/doctor/ProviderApplication/')
@@ -24,8 +30,15 @@ def test_list_applications():
 def test_retrieve_application():
     client=APIClient()
     account=AccountFactory()
-    application=ProviderApplicationFactory(account_related=account)
+    user=account.user
+    token=generate_access_token(user)
     
+
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+    
+    application=ProviderApplicationFactory(account_related=account)
+    print(f"application{application}")
+    print(f"account{application.account_related}")
     response=client.get(f'/doctor/ProviderApplication/{application.id}/')
     
     assert response.status_code == 200

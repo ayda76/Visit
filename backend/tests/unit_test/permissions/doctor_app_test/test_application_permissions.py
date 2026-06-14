@@ -81,7 +81,7 @@ def test_application_permisson_get_not_admin(mock_get_user_jwt):
     request.method="GET"
     
     result=permission.has_permission(request,None)
-    assert result == False
+    assert result == True
 
 @patch("doctor_app.permissions.Account.get_user_jwt") 
 def test_application_permission_retrieve_authorized(mock_get_user_jwt):

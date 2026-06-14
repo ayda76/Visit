@@ -1,37 +1,14 @@
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  font-weight: 500; border-radius: var(--r-sm); border: none; cursor: pointer;
-  font-family: var(--font-body); white-space: nowrap;
-  transition: background var(--t), transform var(--t), box-shadow var(--t), opacity var(--t);
-}
-.btn:not(.loading):not(:disabled):hover { transform: translateY(-1px); }
-.btn:not(.loading):not(:disabled):active { transform: translateY(0); }
-.btn:disabled, .btn.loading { opacity: .55; cursor: not-allowed; transform: none !important; }
-
-.sm  { font-size: 13px; padding: 7px 14px; }
-.md  { font-size: 14px; padding: 10px 20px; }
-.lg  { font-size: 15px; padding: 13px 26px; }
-.full { width: 100%; }
-
-.primary { background: var(--ink); color: var(--white); }
-.primary:not(.loading):not(:disabled):hover { background: var(--ink-mid); box-shadow: 0 4px 16px rgba(14,17,23,.2); }
-
-.teal { background: var(--teal); color: var(--white); }
-.teal:not(.loading):not(:disabled):hover { background: var(--teal-dark); box-shadow: 0 4px 16px rgba(11,191,163,.3); }
-
-.outline { background: transparent; color: var(--ink); border: 1.5px solid var(--mist); }
-.outline:not(.loading):not(:disabled):hover { border-color: var(--teal); background: var(--teal-pale); color: var(--teal-dark); }
-
-.ghost { background: transparent; color: var(--slate); }
-.ghost:not(.loading):not(:disabled):hover { background: var(--fog); color: var(--ink); }
-
-.danger { background: var(--rose); color: white; }
-.danger:not(.loading):not(:disabled):hover { background: #c93b40; }
-
-.icon { display: flex; align-items: center; }
-.spinner {
-  width: 15px; height: 15px;
-  border: 2px solid rgba(255,255,255,.3);
-  border-top-color: white; border-radius: 50%;
-  animation: spin .7s linear infinite; display: inline-block;
-}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:500;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:var(--font-b);white-space:nowrap;transition:background var(--t),transform var(--t),box-shadow var(--t),opacity var(--t)}
+.b:not(.dis):not(:disabled):hover{transform:translateY(-1px)}
+.b:not(.dis):not(:disabled):active{transform:translateY(0)}
+.b:disabled,.b.dis{opacity:.5;cursor:not-allowed;transform:none!important}
+.sm{font-size:13px;padding:7px 14px}.md{font-size:14px;padding:10px 20px}.lg{font-size:15px;padding:13px 26px}
+.full{width:100%}
+.primary{background:var(--ink);color:#fff}.primary:not(.dis):not(:disabled):hover{background:var(--ink-mid);box-shadow:0 4px 16px rgba(14,17,23,.2)}
+.teal{background:var(--teal);color:#fff}.teal:not(.dis):not(:disabled):hover{background:var(--teal-dk);box-shadow:0 4px 16px rgba(11,191,163,.3)}
+.outline{background:transparent;color:var(--ink);border:1.5px solid var(--mist)}.outline:not(.dis):not(:disabled):hover{border-color:var(--teal);background:var(--teal-pale);color:var(--teal-dk)}
+.ghost{background:transparent;color:var(--slate)}.ghost:not(.dis):not(:disabled):hover{background:var(--fog);color:var(--ink)}
+.danger{background:var(--rose);color:#fff}.danger:not(.dis):not(:disabled):hover{background:#c93b40}
+.violet{background:var(--violet);color:#fff}.violet:not(.dis):not(:disabled):hover{background:#6d28d9}
+.ico{display:flex;align-items:center}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}

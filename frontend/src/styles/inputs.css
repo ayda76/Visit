@@ -1,0 +1,9 @@
+input[type=text],input[type=email],input[type=password],input[type=tel],input[type=number],input[type=time],input[type=date],select,textarea{
+  width:100%;border:1.5px solid var(--fog);border-radius:var(--r-sm);
+  padding:11px 14px;font-size:15px;color:var(--ink);background:var(--white);
+  font-family:var(--font-b);transition:border-color var(--t);
+}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none}
+input::placeholder,textarea::placeholder{color:var(--mist)}
+select{cursor:pointer}
+textarea{resize:vertical}

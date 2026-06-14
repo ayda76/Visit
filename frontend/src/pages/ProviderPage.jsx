@@ -1,48 +1,45 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { providersAPI, scheduleAPI, reviewsAPI } from '../api';
+import { providersAPI, reviewsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import Spinner from '../components/common/Spinner';
 import Stars from '../components/common/Stars';
 import Btn from '../components/common/Btn';
 import toast from 'react-hot-toast';
-import { format, parseISO, startOfWeek, addDays, isSameDay } from 'date-fns';
+import { format, addDays, startOfToday } from 'date-fns';
 import { Calendar, Clock, MapPin, Star, ChevronLeft, ChevronRight, MessageSquare, Award } from 'lucide-react';
 import s from './ProviderPage.module.css';
+
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 export default function ProviderPage() {
   const { id } = useParams();
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
-  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [startDate, setStartDate] = useState(startOfToday());
+  const [selectedDay, setSelectedDay] = useState(null); // index 0-6 into slotsData
+  const [showReview, setShowReview] = useState(false);
+  const [rv, setRv] = useState({ rating: 5, comment: '' });
 
-  const { data: provider, isLoading } = useQuery(
-    ['provider', id], () => providersAPI.detail(id), { select: d => d.data },
-  );
+  const { data: provider, isLoading } = useQuery(['provider', id], () => providersAPI.detail(id), { select: d => d.data });
 
-  const { data: slots } = useQuery(
-    ['slots', id], () => providersAPI.slots(id), { select: d => d.data },
+  // Slots API returns: [ { date, weekday, slots: [{start, end, reserved}] } ]
+  const { data: slotsData, isLoading: slotsLoading } = useQuery(
+    ['slots', id, format(startDate, 'yyyy-MM-dd')],
+    () => providersAPI.slots(id, format(startDate, 'yyyy-MM-dd')),
+    { select: d => d.data, enabled: !!id },
   );
 
   const { data: reviews } = useQuery(
-    ['reviews', id], () => reviewsAPI.list({ provider: id }), {
-      select: d => d.data?.results || d.data || [],
-    },
+    ['reviews', id], () => reviewsAPI.list({ provider_related: id }),
+    { select: d => d.data?.results || d.data || [] },
   );
 
   const submitReview = useMutation(
     (data) => reviewsAPI.create(data),
     {
-      onSuccess: () => {
-        toast.success('Review submitted!');
-        setShowReviewForm(false);
-        setReviewForm({ rating: 5, comment: '' });
-        qc.invalidateQueries(['reviews', id]);
-      },
+      onSuccess: () => { toast.success('Review submitted!'); setShowReview(false); setRv({ rating: 5, comment: '' }); qc.invalidateQueries(['reviews', id]); },
       onError: () => toast.error('Could not submit review'),
     },
   );
@@ -50,123 +47,93 @@ export default function ProviderPage() {
   if (isLoading) return <Spinner full />;
   if (!provider) return <div style={{ padding: 40, textAlign: 'center' }}>Provider not found.</div>;
 
-  // Build week days
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-
-  // Group slots by date
-  const slotsByDate = {};
-  if (Array.isArray(slots)) {
-    slots.forEach(slot => {
-      const dateKey = slot.date || slot.work_day_date || slot.day;
-      if (dateKey) {
-        if (!slotsByDate[dateKey]) slotsByDate[dateKey] = [];
-        slotsByDate[dateKey].push(slot);
-      }
-    });
-  }
-
-  const selectedDayStr = selectedDay ? format(selectedDay, 'yyyy-MM-dd') : null;
-  const daySlots = selectedDayStr ? (slotsByDate[selectedDayStr] || []) : [];
+  // slotsData is array of 7 days
+  const weekDays = Array.isArray(slotsData) ? slotsData : [];
+  const selectedDayData = selectedDay !== null ? weekDays[selectedDay] : null;
+  const daySlots = selectedDayData?.slots || [];
 
   return (
-    <div className={s.page}>
+    <div>
       {/* Hero */}
       <div className={s.hero}>
-        <div className={s.heroInner}>
-          <div className={s.avatar}>{(provider.name || provider.doctor_name || 'P')[0]}</div>
-          <div className={s.heroInfo}>
-            <h1>{provider.name || provider.doctor_name}</h1>
-            <p className={s.spec}>{provider.expertize_name || provider.type}</p>
+        <div className={s.hIn}>
+          <div className={s.av}>{(provider.name || 'P')[0]}</div>
+          <div className={s.hInfo}>
+            <h1>{provider.name}</h1>
+            <p className={s.spec}>{provider.expertize_name}</p>
             <div className={s.badges}>
               {provider.location && <span className={s.badge}><MapPin size={12} />{provider.location}</span>}
-              {provider.is_verified && <span className={`${s.badge} ${s.verified}`}><Award size={12} />Verified</span>}
+              {provider.is_active && <span className={`${s.badge} ${s.ver}`}><Award size={12} />Active</span>}
             </div>
             {provider.average_rating != null && (
-              <div className={s.ratingRow}>
+              <div className={s.rrow}>
                 <Stars value={provider.average_rating} />
-                <span className={s.rNum}>{parseFloat(provider.average_rating).toFixed(1)}</span>
-                <span className={s.rCount}>({provider.review_count || 0} reviews)</span>
+                <span className={s.rn}>{parseFloat(provider.average_rating).toFixed(1)}</span>
+                <span className={s.rc}>({provider.review_count || 0} reviews)</span>
               </div>
             )}
           </div>
-          {user && (
-            <Link to={`/book/${provider.id}`}>
-              <Btn variant="teal" size="lg" icon={<Calendar size={16} />}>Book Appointment</Btn>
-            </Link>
-          )}
-          {!user && (
-            <Link to="/login">
-              <Btn variant="teal" size="lg" icon={<Calendar size={16} />}>Sign in to Book</Btn>
-            </Link>
-          )}
+          <div>
+            {user?.role === 'patient'
+              ? <Link to={`/book/${provider.id}`}><Btn variant="teal" size="lg" icon={<Calendar size={16} />}>Book Appointment</Btn></Link>
+              : !user && <Link to="/login"><Btn variant="teal" size="lg">Sign in to Book</Btn></Link>
+            }
+          </div>
         </div>
       </div>
 
       <div className={s.body}>
         <div className={s.main}>
-          {/* Bio */}
-          {provider.bio && (
-            <section className={s.sec}>
-              <h2>About</h2>
-              <p>{provider.bio}</p>
-            </section>
-          )}
-
-          {/* Weekly calendar */}
+          {/* Availability calendar */}
           <section className={s.sec}>
-            <h2><Calendar size={18} style={{ display: 'inline', marginRight: 8 }} />Availability</h2>
-            <div className={s.calNav}>
-              <button className={s.calBtn} onClick={() => setWeekStart(d => addDays(d, -7))}>
-                <ChevronLeft size={16} />
-              </button>
-              <span>{format(weekStart, 'MMM d')} — {format(addDays(weekStart, 6), 'MMM d, yyyy')}</span>
-              <button className={s.calBtn} onClick={() => setWeekStart(d => addDays(d, 7))}>
-                <ChevronRight size={16} />
-              </button>
+            <h2><Calendar size={17} style={{ display: 'inline', marginRight: 8 }} />Weekly Availability</h2>
+
+            {/* Week navigation */}
+            <div className={s.wNav}>
+              <button className={s.wBtn} onClick={() => { setStartDate(d => addDays(d, -7)); setSelectedDay(null); }}><ChevronLeft size={16} /></button>
+              <span>{format(startDate, 'MMM d')} — {format(addDays(startDate, 6), 'MMM d, yyyy')}</span>
+              <button className={s.wBtn} onClick={() => { setStartDate(d => addDays(d, 7)); setSelectedDay(null); }}><ChevronRight size={16} /></button>
             </div>
 
-            <div className={s.calGrid}>
-              {weekDays.map(day => {
-                const key = format(day, 'yyyy-MM-dd');
-                const dayHasSlots = slotsByDate[key]?.length > 0;
-                const isSelected  = selectedDay && isSameDay(day, selectedDay);
-                const isPast      = day < new Date().setHours(0,0,0,0);
-                return (
-                  <button
-                    key={key}
-                    className={`${s.calDay} ${isSelected ? s.calSelected : ''} ${dayHasSlots ? s.calHasSlots : ''} ${isPast ? s.calPast : ''}`}
-                    onClick={() => !isPast && setSelectedDay(isSameDay(day, selectedDay) ? null : day)}
-                    disabled={isPast}
-                  >
-                    <span className={s.dayName}>{format(day, 'EEE')}</span>
-                    <span className={s.dayNum}>{format(day, 'd')}</span>
-                    {dayHasSlots && <span className={s.dot} />}
-                  </button>
-                );
-              })}
-            </div>
+            {slotsLoading ? <Spinner size={24} /> : (
+              <div className={s.calGrid}>
+                {weekDays.map((day, idx) => {
+                  const freeCount = day.slots?.filter(sl => !sl.reserved).length || 0;
+                  const isPast = new Date(day.date) < startOfToday();
+                  return (
+                    <button key={day.date}
+                      className={`${s.calDay} ${selectedDay === idx ? s.calSel : ''} ${freeCount > 0 ? s.calHas : ''} ${isPast ? s.calPast : ''}`}
+                      onClick={() => !isPast && setSelectedDay(selectedDay === idx ? null : idx)}
+                      disabled={isPast}
+                    >
+                      <span className={s.dName}>{DAYS[day.weekday]}</span>
+                      <span className={s.dNum}>{format(new Date(day.date), 'd')}</span>
+                      {freeCount > 0 && <span className={s.dDot} />}
+                      {freeCount > 0 && <span className={s.dCnt}>{freeCount} free</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
-            {/* Day slots */}
-            {selectedDay && (
-              <div className={s.daySlots}>
-                <h4>{format(selectedDay, 'EEEE, MMMM d')}</h4>
-                {daySlots.length === 0 ? (
-                  <p className={s.noSlots}>No slots available this day.</p>
-                ) : (
-                  <div className={s.slotsGrid}>
-                    {daySlots.map(slot => (
-                      <div key={slot.id} className={`${s.slot} ${slot.is_booked ? s.slotBooked : s.slotFree}`}>
-                        <Clock size={12} />
-                        {slot.start_time || slot.time}
-                        <span className={slot.is_booked ? s.bookedLabel : s.freeLabel}>
-                          {slot.is_booked ? 'Booked' : 'Free'}
-                        </span>
+            {/* Slots for selected day */}
+            {selectedDayData && (
+              <div className={s.dayBox}>
+                <h4>{format(new Date(selectedDayData.date), 'EEEE, MMMM d')}</h4>
+                {daySlots.length === 0
+                  ? <p className={s.noSlots}>No slots configured for this day.</p>
+                  : <div className={s.sGrid}>
+                    {daySlots.map((sl, i) => (
+                      <div key={i} className={`${s.slot} ${sl.reserved ? s.slotRes : s.slotFree}`}>
+                        <Clock size={11} />
+                        {sl.start.slice(0, 5)} – {sl.end.slice(0, 5)}
+                        <span className={sl.reserved ? s.lRes : s.lFree}>{sl.reserved ? 'Booked' : 'Free'}</span>
                       </div>
                     ))}
                   </div>
-                )}
-                {user && daySlots.some(sl => !sl.is_booked) && (
-                  <Link to={`/book/${provider.id}?date=${format(selectedDay, 'yyyy-MM-dd')}`}>
+                }
+                {user?.role === 'patient' && daySlots.some(sl => !sl.reserved) && (
+                  <Link to={`/book/${provider.id}?date=${selectedDayData.date}`}>
                     <Btn variant="teal" size="sm" style={{ marginTop: 12 }}>Book for this day</Btn>
                   </Link>
                 )}
@@ -176,63 +143,39 @@ export default function ProviderPage() {
 
           {/* Reviews */}
           <section className={s.sec}>
-            <div className={s.secHead}>
-              <h2><MessageSquare size={18} style={{ display: 'inline', marginRight: 8 }} />Reviews</h2>
-              {user && !showReviewForm && (
-                <Btn variant="outline" size="sm" icon={<Star size={13} />} onClick={() => setShowReviewForm(true)}>
-                  Write a Review
-                </Btn>
+            <div className={s.secH}>
+              <h2><MessageSquare size={17} style={{ display: 'inline', marginRight: 8 }} />Reviews</h2>
+              {user?.role === 'patient' && !showReview && (
+                <Btn variant="outline" size="sm" icon={<Star size={13} />} onClick={() => setShowReview(true)}>Write Review</Btn>
               )}
             </div>
-
-            {showReviewForm && (
-              <div className={s.reviewForm}>
-                <h4>Your Review</h4>
-                <div className={s.ratingPicker}>
+            {showReview && (
+              <div className={s.rvForm}>
+                <div style={{ display: 'flex', gap: 4 }}>
                   {[1,2,3,4,5].map(n => (
-                    <button key={n} onClick={() => setReviewForm(f => ({ ...f, rating: n }))}>
-                      <Star size={24}
-                        fill={n <= reviewForm.rating ? '#f0a800' : 'none'}
-                        stroke={n <= reviewForm.rating ? '#f0a800' : '#c8d4e3'}
-                        strokeWidth={1.5}
-                      />
+                    <button key={n} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }} onClick={() => setRv(r => ({ ...r, rating: n }))}>
+                      <Star size={24} fill={n <= rv.rating ? '#f0a800' : 'none'} stroke={n <= rv.rating ? '#f0a800' : '#c8d4e3'} strokeWidth={1.5} />
                     </button>
                   ))}
                 </div>
-                <textarea
-                  placeholder="Share your experience..."
-                  value={reviewForm.comment}
-                  onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
-                  rows={3}
-                  className={s.textarea}
-                />
+                <textarea placeholder="Share your experience..." value={rv.comment} onChange={e => setRv(r => ({ ...r, comment: e.target.value }))} rows={3} />
                 <div style={{ display: 'flex', gap: 8 }}>
                   <Btn variant="teal" size="sm" loading={submitReview.isLoading}
-                    onClick={() => submitReview.mutate({ provider: id, ...reviewForm })}>
-                    Submit
-                  </Btn>
-                  <Btn variant="ghost" size="sm" onClick={() => setShowReviewForm(false)}>Cancel</Btn>
+                    onClick={() => submitReview.mutate({ provider_related: id, rating: rv.rating, comment: rv.comment })}>Submit</Btn>
+                  <Btn variant="ghost" size="sm" onClick={() => setShowReview(false)}>Cancel</Btn>
                 </div>
               </div>
             )}
-
-            {!reviews?.length ? (
-              <p className={s.noReviews}>No reviews yet. Be the first!</p>
-            ) : (
-              <div className={s.reviewList}>
+            {!reviews?.length ? <p style={{ color: 'var(--steel)', fontSize: 14 }}>No reviews yet.</p> : (
+              <div className={s.rvList}>
                 {reviews.map(r => (
-                  <div key={r.id} className={s.review}>
-                    <div className={s.reviewTop}>
-                      <div className={s.rAvatar}>{(r.user_name || r.patient_name || 'P')[0]}</div>
-                      <div>
-                        <p className={s.rName}>{r.user_name || r.patient_name || 'Anonymous'}</p>
-                        <Stars value={r.rating} size={13} />
-                      </div>
-                      <span className={s.rDate}>
-                        {r.created_at ? format(parseISO(r.created_at), 'MMM d, yyyy') : ''}
-                      </span>
+                  <div key={r.id} className={s.rv}>
+                    <div className={s.rvTop}>
+                      <div className={s.rvAv}>{(r.patient_name || 'P')[0]}</div>
+                      <div><p className={s.rvName}>{r.patient_name || 'Anonymous'}</p><Stars value={r.rating} size={13} /></div>
+                      <span className={s.rvDate}>{r.created_at ? format(new Date(r.created_at), 'MMM d, yyyy') : ''}</span>
                     </div>
-                    {r.comment && <p className={s.rText}>{r.comment}</p>}
+                    {r.comment && <p className={s.rvTxt}>{r.comment}</p>}
                   </div>
                 ))}
               </div>
@@ -241,15 +184,11 @@ export default function ProviderPage() {
         </div>
 
         {/* Sidebar */}
-        <aside className={s.sidebar}>
-          <div className={s.infoCard}>
+        <aside className={s.side}>
+          <div className={s.iCard}>
             <h3>Details</h3>
             {provider.expertize_name && <div className={s.iRow}><span>Specialty</span><strong>{provider.expertize_name}</strong></div>}
-            {provider.sub_expertize_name && <div className={s.iRow}><span>Sub-specialty</span><strong>{provider.sub_expertize_name}</strong></div>}
-            {provider.center_name && <div className={s.iRow}><span>Center</span><strong>{provider.center_name}</strong></div>}
-            {provider.location && <div className={s.iRow}><span>Location</span><strong>{provider.location}</strong></div>}
-            {provider.phone && <div className={s.iRow}><span>Phone</span><strong>{provider.phone}</strong></div>}
-            {provider.consultation_fee && <div className={s.iRow}><span>Fee</span><strong>€{provider.consultation_fee}</strong></div>}
+            {provider.Center_related && <div className={s.iRow}><span>Center</span><strong>{provider.Center_related}</strong></div>}
           </div>
         </aside>
       </div>

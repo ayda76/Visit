@@ -82,12 +82,11 @@ class Provider_Review_Permissions(permissions.BasePermission):
         
     def can_create_review(self, request):
         account_logedin= Account.get_user_jwt(self,request)
-        if account_logedin.role == Role.PATIENT:
-            return True
-        elif account_logedin.role == Role.ADMIN:
-            return True
-        else: 
-            return False
+        if account_logedin:
+            if account_logedin.role in [Role.PATIENT,Role.ADMIN]:
+                return True
+         
+        return False
         
     def has_object_permission(self, request, view, obj):
 
@@ -96,6 +95,9 @@ class Provider_Review_Permissions(permissions.BasePermission):
             return True
 
         account_logedin = Account.get_user_jwt(self, request)
+        if account_logedin==None:
+            return False
+        
         if account_logedin.role == Role.ADMIN:
             return True
         else:

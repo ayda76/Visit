@@ -7,7 +7,8 @@ from datetime import datetime, timedelta, date
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-
+from django.core.cache import cache
+from rest_framework.response import Response
 
 
 from account_app.models import (Role,
@@ -69,6 +70,22 @@ class DoctorViewSet(viewsets.ModelViewSet):
     permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
+    
+    def list(self, request, *args, **kwargs):
+        params = request.GET.urlencode()
+        
+        cache_key = f"doctors:list:{params or 'all'}"
+        cached_data = cache.get(cache_key)
+        
+        if cached_data is not None:
+            return Response(cached_data)
+        
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset,many=True)
+        
+        cache.set(cache_key,serializer.data,timeout=300)
+        
+        return Response(serializer.data)
 
 class ProviderViewSet(viewsets.ModelViewSet):
     queryset =  Provider.objects.select_related('account_related','Center_related')

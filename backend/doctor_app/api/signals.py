@@ -5,53 +5,46 @@ from django_redis import get_redis_connection
 
 from doctor_app.models import Doctor,Center
 
+def clear_cache_pattern(pattern):
 
-def clear_doctor_cache():
     redis = get_redis_connection("default")
 
-    keys = redis.keys("doctor:list:*")
+    keys = redis.keys(pattern)
 
     if keys:
         redis.delete(*keys)
 
-def clear_center_cache():
-    redis = get_redis_connection("default")
-
-    keys = redis.keys("center:list:*")
-
-    if keys:
-        redis.delete(*keys)
 
 ########doctor signals ###############
 @receiver(post_save,sender=Doctor)
 def clear_doctor_cache_save(sender, instance, **kwargs):
-    clear_doctor_cache()
+    clear_cache_pattern("doctor:*")
     
     
 
 @receiver(post_delete,sender=Doctor)
 def clear_doctor_cache_delete(sender, instance, **kwargs):
-    clear_doctor_cache()
+    clear_cache_pattern("doctor:*")
 
 
 #for changing the many to many field in doctor
 @receiver(m2m_changed,sender=Doctor.subExpertize_relateds.through)
 def clear_doctor_m2m_subExpertize_relateds_cache(sender, **kwargs):
     
-    clear_doctor_cache()
+    clear_cache_pattern("doctor:*")
     
 @receiver(m2m_changed,sender=Doctor.providers_recommended.through)
 def clear_doctor_m2m_providers_recommended_cache(sender, **kwargs):
     
-    clear_doctor_cache()
+    clear_cache_pattern("doctor:*")
     
 ########    center signals   ###############   
 @receiver(post_save,sender=Center)
 def clear_center_cache_save(sender, instance, **kwargs):
-    clear_center_cache()
+    clear_cache_pattern("center:*")
     
 @receiver(post_delete,sender=Center)
 def clear_center_cache_delete(sender, instance, **kwargs):
-    clear_center_cache()
+    clear_cache_pattern("center:*")
 
 

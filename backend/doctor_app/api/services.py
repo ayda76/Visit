@@ -40,8 +40,8 @@ def list_cached(self, request, key):
     cached_data = cache.get(cache_key)
     if cached_data is not None:
         return cached_data
-        
-    queryset = self.get_queryset()
+    ##we use self.filter_queryset so when returning list and filtering we dont get doctor.objects.all()     
+    queryset = self.filter_queryset(self.get_queryset())
     serializer = self.get_serializer(queryset,many=True)
         
     cache.set(cache_key,serializer.data,timeout=300)

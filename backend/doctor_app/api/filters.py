@@ -1,7 +1,17 @@
 import django_filters
-from doctor_app.models import Provider
-                           
+from doctor_app.models import Provider,Doctor
+               
 
+                
+class DoctorFilter(django_filters.FilterSet):
+    class Meta:
+        model =Doctor
+        fields={
+     
+            'provider_related__account_related__firstname':['iexact','icontains'],
+            'provider_related__account_related__lastname':['iexact','icontains'],
+            'expertize_related__name': ['iexact', 'icontains'],   
+        }
 
 
 class ProviderFilter(django_filters.FilterSet):

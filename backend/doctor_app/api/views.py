@@ -5,12 +5,13 @@ from rest_framework.decorators import action
 from datetime import datetime, timedelta, date
 
 from django.db import transaction
+from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
 from rest_framework.response import Response
 
-
+from doctor_app.api.filters import DoctorFilter
 from account_app.models import (Role,
                                 Status,
                                 Account
@@ -76,6 +77,15 @@ class DoctorViewSet(viewsets.ModelViewSet):
     pagination_class=None
     my_tags = ["Doctor"]
     
+    filterset_class=DoctorFilter
+    filter_backends=[DjangoFilterBackend,
+                    filters.SearchFilter,
+                    # filters.OrderingFilter,
+                    ]
+    search_fields = [
+        'provider_related__account_related__firstname',
+        'provider_related__account_related__lastname',
+    ]
     def list(self, request, *args, **kwargs):
         data=list_cached(self,request,"doctor")
         

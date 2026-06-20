@@ -15,7 +15,7 @@ def clear_doctor_cache():
         redis.delete(*keys)
 
 @receiver(post_save,sender=Doctor)
-def clear_doctor_cache(sender, instance, **kwargs):
+def clear_doctor_cache_save(sender, instance, **kwargs):
     clear_doctor_cache()
     
     

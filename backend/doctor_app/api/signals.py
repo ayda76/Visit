@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.core.cache import cache
 from django_redis import get_redis_connection
 
-from doctor_app.models import Doctor
+from doctor_app.models import Doctor,Center
 
 
 def clear_doctor_cache():
@@ -14,6 +14,15 @@ def clear_doctor_cache():
     if keys:
         redis.delete(*keys)
 
+def clear_center_cache():
+    redis = get_redis_connection("default")
+
+    keys = redis.keys("center:list:*")
+
+    if keys:
+        redis.delete(*keys)
+
+########doctor signals ###############
 @receiver(post_save,sender=Doctor)
 def clear_doctor_cache_save(sender, instance, **kwargs):
     clear_doctor_cache()
@@ -35,3 +44,14 @@ def clear_doctor_m2m_subExpertize_relateds_cache(sender, **kwargs):
 def clear_doctor_m2m_providers_recommended_cache(sender, **kwargs):
     
     clear_doctor_cache()
+    
+########    center signals   ###############   
+@receiver(post_save,sender=Center)
+def clear_center_cache_save(sender, instance, **kwargs):
+    clear_center_cache()
+    
+@receiver(post_delete,sender=Center)
+def clear_center_cache_delete(sender, instance, **kwargs):
+    clear_center_cache()
+
+

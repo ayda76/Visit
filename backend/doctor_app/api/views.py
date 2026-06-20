@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, date
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
-from django.core.cache import cache
+
 from rest_framework.response import Response
 
 
@@ -37,7 +37,7 @@ from doctor_app.models import (StatusApplication,
                                 ProviderApplication,
                                 ProviderReview)
 
-from doctor_app.api.services import add_patient,add_account_application
+from doctor_app.api.services import add_patient,add_account_application,list_cached
 
 
 
@@ -47,7 +47,12 @@ class CenterViewSet(viewsets.ModelViewSet):
     permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
-
+    
+    def list(self, request, *args, **kwargs):
+        
+        data=list_cached(self,request,"center")
+        
+        return Response(data)
 
 
 class ExpertizeViewSet(viewsets.ModelViewSet):
@@ -72,20 +77,9 @@ class DoctorViewSet(viewsets.ModelViewSet):
     my_tags = ["Doctor"]
     
     def list(self, request, *args, **kwargs):
-        params = request.GET.urlencode()
+        data=list_cached(self,request,"doctor")
         
-        cache_key = f"doctors:list:{params or 'all'}"
-        cached_data = cache.get(cache_key)
-        
-        if cached_data is not None:
-            return Response(cached_data)
-        
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset,many=True)
-        
-        cache.set(cache_key,serializer.data,timeout=300)
-        
-        return Response(serializer.data)
+        return Response(data)
 
 class ProviderViewSet(viewsets.ModelViewSet):
     queryset =  Provider.objects.select_related('account_related','Center_related')

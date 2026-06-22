@@ -7,7 +7,7 @@ class CenterFilter(django_filters.FilterSet):
         fields={
      
             'manager__firstname':['iexact','icontains'],
-            'manager__account_related__lastname':['iexact','icontains'],
+            'manager__lastname':['iexact','icontains'],
             'name': ['iexact', 'icontains'],   
         }
                

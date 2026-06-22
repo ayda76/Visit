@@ -73,6 +73,11 @@ class ExpertizeViewSet(viewsets.ModelViewSet):
     pagination_class=None
     my_tags = ["Doctor"]
     
+    def list(self, request, *args, **kwargs):
+        data=list_cached(self,request,"expertize")
+        
+        return Response(data)
+    
 class SubExpertizeViewSet(viewsets.ModelViewSet):
     queryset = SubExpertize.objects.select_related('expertize_related')
     serializer_class =SubExpertizeSerializer

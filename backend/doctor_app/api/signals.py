@@ -4,7 +4,7 @@ from django.core.cache import cache
 from django_redis import get_redis_connection
 
 
-from doctor_app.models import Doctor,Center
+from doctor_app.models import Doctor,Center,Expertize
 
 def clear_cache_pattern(pattern):
 
@@ -57,4 +57,11 @@ def clear_center_cache_delete(sender, instance, **kwargs):
     clear_cache_pattern("center:*")
 
 
+####### expertize signals #############
+@receiver(post_save,sender=Expertize)
+def clear_expertize_cache_save(sender, instance, **kwargs):
+    clear_cache_pattern("expertize:*")
 
+@receiver(post_delete,sender=Expertize)
+def clear_expertize_cache_delete(sender, instance, **kwargs):
+    clear_cache_pattern("expertize:*")

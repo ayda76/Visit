@@ -13,7 +13,6 @@ from rest_framework.pagination import PageNumberPagination, LimitOffsetPaginatio
 
 from rest_framework.response import Response
 
-from doctor_app.api.filters import DoctorFilter
 from account_app.models import (Role,
                                 Status,
                                 Account
@@ -21,7 +20,7 @@ from account_app.models import (Role,
 from doctor_app.permissions import Admin_Permissions,Provider_Review_Permissions,ProviderApplication_Permissions
 from book_app.models import Appointment
 from doctor_app.tasks import send_acceptance_email
-from doctor_app.api.filters import ProviderFilter
+from doctor_app.api.filters import ProviderFilter,CenterFilter,DoctorFilter
 from doctor_app.api.serializers import (CenterSerializer,
                                          ExpertizeSerializer,
                                          SubExpertizeSerializer,
@@ -50,7 +49,16 @@ class CenterViewSet(viewsets.ModelViewSet):
     permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
-    
+    filterset_class=CenterFilter
+    filter_backends=[DjangoFilterBackend,
+                    filters.SearchFilter,
+                    # filters.OrderingFilter,
+                    ]
+    search_fields = [
+        'manager__firstname',
+        'manager__lastname',
+        'name'
+    ]    
     def list(self, request, *args, **kwargs):
         
         data=list_cached(self,request,"center")
@@ -64,6 +72,11 @@ class ExpertizeViewSet(viewsets.ModelViewSet):
     permission_classes=[Admin_Permissions]
     pagination_class=None
     my_tags = ["Doctor"]
+    
+    def list(self, request, *args, **kwargs):
+        data=list_cached(self,request,"expertize")
+        
+        return Response(data)
     
 class SubExpertizeViewSet(viewsets.ModelViewSet):
     queryset = SubExpertize.objects.select_related('expertize_related')

@@ -1,5 +1,15 @@
 import django_filters
-from doctor_app.models import Provider,Doctor
+from doctor_app.models import Provider,Center,Doctor
+
+class CenterFilter(django_filters.FilterSet):
+    class Meta:
+        model =Center
+        fields={
+     
+            'manager__firstname':['iexact','icontains'],
+            'manager__lastname':['iexact','icontains'],
+            'name': ['iexact', 'icontains'],   
+        }
                
 
                 

@@ -17,7 +17,10 @@ from account_app.api.serializers import (AccountSerializer,
                                          LoginSerializer,
                                          PasswordChangeSerializer)
 from account_app.models import Account
-
+from account_app.api.throttles import LoginThrottle
+from account_app.api.helpers import (is_locked,
+                                     register_failed_attempt,
+                                     clear_attempts)
 # Helper function to generate JWT token
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -41,19 +44,34 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     my_tags = ["Account"]
+    throttle_classes = [LoginThrottle]
+    
     @swagger_auto_schema(request_body=LoginSerializer)
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = authenticate(
-                username=serializer.validated_data['username'],
-                password=serializer.validated_data['password']
+        
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
             )
-            if user:
-                tokens = get_tokens_for_user(user)  
-                return Response(tokens, status=status.HTTP_200_OK)
+        username = serializer.validated_data["username"]
+        if is_locked(username):
+             return Response({"error":"Account temporarily locked. Try again later."}, status=status.HTTP_429_TOO_MANY_REQUESTS )
+ 
+        user = authenticate(
+            username=serializer.validated_data['username'],
+            password=serializer.validated_data['password']
+        )
+        
+        if user:
+            clear_attempts(username)
+            tokens = get_tokens_for_user(user)  
+            return Response(tokens, status=status.HTTP_200_OK)
+        else:
+            register_failed_attempt(username)
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)                                  
+                                     
                                   
                                   
 class AccountViewSet(viewsets.ModelViewSet):

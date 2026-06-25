@@ -7,14 +7,17 @@ from book_app.permissions import Appointment_Permissions
 from book_app.api.services import  add_account
 
 from book_app.api.serializers import AppointmentSerializer
+from book_app.api.throttles import AppointmentThrottle
 from book_app.models import Appointment
 from book_app.tasks import send_booked_email
+
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.select_related('provider_related','patient')
     serializer_class = AppointmentSerializer
     pagination_class=None
     permission_classes=[Appointment_Permissions]
+    throttle_classes = [AppointmentThrottle]
     my_tags = ["Book"]
     
     def perform_create(self, serializer):

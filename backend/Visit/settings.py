@@ -34,6 +34,7 @@ REST_FRAMEWORK = {
  'PAGE_SIZE': 3,
  'DEFAULT_THROTTLE_RATES': {
         'login': '5/min',
+        'appointment': '20/hour',
     }
  }
 
